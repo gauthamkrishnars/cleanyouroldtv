@@ -1,8 +1,13 @@
+<p align="center">
+  <img src="assets/social_preview.png" alt="CleanYourOldTV Open Source Toolkit" width="100%" />
+</p>
+
 # CleanYourOldTV ⚡📺
 
 > Speed up budget Android TVs (1GB RAM or less) over local Wi-Fi in under a minute.  
 > Instant UI response, safe user-space debloat, on-device web remote with trackpad, and hardware-buffered media playback.
 
+[![GitHub Release](https://img.shields.io/github/v/release/gauthamkrishnars/cleanyouroldtv?color=blue&label=Release)](https://github.com/gauthamkrishnars/cleanyouroldtv/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Android TV](https://img.shields.io/badge/Supported-Android%20TV%20%7C%20Google%20TV%20%7C%20Fire%20OS-brightgreen.svg)](#supported-tvs)
 [![Safety: 100% Verified](https://img.shields.io/badge/Safety-Brick--Proof-success.svg)](docs/SAFETY_AND_CVTE_GUIDE.md)
