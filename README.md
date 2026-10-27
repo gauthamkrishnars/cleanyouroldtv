@@ -198,6 +198,27 @@ The restore script:
 
 ---
 
+## Frequently Asked Questions
+
+#### Will this void my television warranty or brick the device?
+No. All modifications run purely in user space using standard Android debug bridge commands (`settings put` and `pm disable-user --user 0`). The scripts never flash firmware, modify bootloaders, or alter the read-only `/system` partition. Running `RESTORE_FACTORY.bat` or `./restore_factory.sh` reverts all settings immediately.
+
+#### Does the phone remote require an internet connection?
+No. The micro web server runs locally on the television port 8080. As long as your phone and TV are connected to the same local Wi-Fi or router subnet, the remote operates entirely offline without external servers.
+
+#### Why use VLC as an external player for Stremio?
+Budget televisions frequently feature hardware decoders that struggle with modern container formats. VLC includes dedicated hardware acceleration and configurable network cache buffering (set to 3,000 ms), preventing stutter and playback crashes on low-RAM chipsets.
+
+---
+
+## Legal Disclaimer
+
+* **No Media Hosting**: CleanYourOldTV is an open-source technical utility designed to optimize system resources and manage device inputs. This project does not host, upload, distribute, or index any video files, media streams, or copyrighted digital content.
+* **Third-Party Addons**: Community addons such as Torrentio and Anime Kitsu are maintained independently by third-party developers. Users are solely responsible for ensuring their usage complies with all applicable local copyright laws and regulations.
+* **Nominative Fair Use**: All brand names, trademarks, and logos (including Android, Google, Stremio, VLC, VideoLAN, MediaTek, Lloyd, Xiaomi, TCL, and others) belong to their respective copyright holders. Their reference within this repository is strictly for identification, hardware compatibility, and educational purposes under fair use.
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
