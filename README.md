@@ -7,7 +7,8 @@
 > Speed up budget Android TVs (1GB RAM or less) over local Wi-Fi in under a minute.  
 > Instant UI response, safe user-space debloat, on-device web remote with trackpad, and hardware-buffered media playback.
 
-[![GitHub Release](https://img.shields.io/github/v/release/gauthamkrishnars/cleanyouroldtv?color=blue&label=Release)](https://github.com/gauthamkrishnars/cleanyouroldtv/releases)
+[![Latest Release](https://img.shields.io/github/v/release/gauthamkrishnars/cleanyouroldtv?color=success&label=Release%20v1.0.0)](https://github.com/gauthamkrishnars/cleanyouroldtv/releases/latest)
+[![Download ZIP](https://img.shields.io/badge/Download-Release%20ZIP-blue.svg)](https://github.com/gauthamkrishnars/cleanyouroldtv/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Android TV](https://img.shields.io/badge/Supported-Android%20TV%20%7C%20Google%20TV%20%7C%20Fire%20OS-brightgreen.svg)](#supported-tvs)
 [![Safety: 100% Verified](https://img.shields.io/badge/Safety-Brick--Proof-success.svg)](docs/SAFETY_AND_CVTE_GUIDE.md)
@@ -92,7 +93,7 @@ For LG webOS or Samsung Tizen instructions, refer to the [Platform Guide](docs/B
 ### Step 2: Run the Optimization Script
 
 #### Windows
-1. Download the [Repository ZIP](https://github.com/gauthamkrishnars/cleanyouroldtv/archive/refs/heads/main.zip) and extract it.
+1. Download the [Latest Release ZIP](https://github.com/gauthamkrishnars/cleanyouroldtv/releases/latest) and extract it to your computer.
 2. If ADB is not installed on your system, install it via winget (`winget install Google.PlatformTools`) or download Google Platform-Tools and place `adb.exe` in this folder.
 3. Double-click `RUN_OPTIMIZER.bat`.
 4. Enter the TV IP address when prompted (or accept auto-detected device).
