@@ -1,7 +1,7 @@
 # CleanYourOldTV ⚡📺
 
 > **Resurrect any sluggish budget Smart TV over Wi-Fi in 60 seconds.**  
-> Instant Menu Response · Safe Background Debloat · 24/7 Phone Remote with Touchpad · Stutter-Free Streaming · 100% Risk-Free.
+> Instant Menu Response · Safe Background Debloat · 24/7 Phone Remote with Touchpad · Free Unlimited Streaming (Movies, Anime, Series) · 100% Risk-Free.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Android TV](https://img.shields.io/badge/Supported-Android%20TV%20%7C%20Google%20TV%20%7C%20Fire%20OS-brightgreen.svg)](#supported-tvs)
@@ -16,7 +16,8 @@ Millions of budget smart TVs (such as **Lloyd, Xiaomi/Mi, TCL, Realme, OnePlus, 
 After a year or two of updates and usage, they slow down to a crawl:
 * 🐢 **Agonizing UI Lag**: Pressing buttons on the remote takes seconds to respond because slow fade animations choke the TV processor.
 * ⌨️ **Typing Torture**: Searching on YouTube or typing Wi-Fi passwords with a sluggish plastic remote is agonizing.
-* 💥 **App Freezes & Decoder Crashes**: When streaming apps attempt high-bitrate video, older TV chips overheat or crash to a black screen.
+* 💸 **Paid Subscriptions & Ad Overload**: Juggling multiple monthly streaming subscriptions with bloated, laggy apps that choke your TV's storage.
+* 💥 **App Freezes & Decoder Crashes**: When streaming apps attempt high-bitrate or 4K video, older TV chips overheat or crash to a black screen.
 * ⚠️ **Generic Guides Break Cable TV**: Many online tutorials tell you to replace the launcher or delete system packages—which breaks your physical remote's Cable TV tuner button or traps your TV in an infinite bootloop!
 
 **CleanYourOldTV** fixes all of this with **no cables, no root, zero risk, and a 1-click restore**.
@@ -29,7 +30,8 @@ After a year or two of updates and usage, they slow down to a crawl:
 | :--- | :--- |
 | **Laggy Home & Settings Menus** | **Instant responsiveness**: Animation delays set to `0.0x` so menus snap open immediately. |
 | **Hidden Factory Telemetry & Bloat** | **Freed RAM**: Freezes background crash-tracking and OEM test shims safely in user-space. |
-| **Lost or Sluggish Plastic Remote** | **24/7 On-TV Web Remote**: Runs directly on the TV using only 24 KB RAM. Accessible from any phone browser on Wi-Fi. |
+| **Lost or Sluggish Plastic Remote** | **24/7 On-TV Web Remote**: Runs directly on the TV in 24 KB RAM with a full laptop touchpad, typing box, and quick-launch buttons. |
+| **Expensive Monthly Subscriptions** | **Free Unlimited Media Stack**: Pre-configures Stremio + Torrentio + Anime Kitsu to stream any Movie, Anime, or Web Series for free! |
 | **No Mouse for Sideloaded Apps** | **Laptop-style Trackpad**: Full touch cursor with micro-nudge arrows for precision aiming. |
 | **Slow On-Screen Typing** | **Direct Phone Typing**: Type passwords, movie titles, and links straight from your phone's keyboard. |
 | **Family Cable TV Compatibility** | **100% Intact**: Keeps your factory TV launcher untouched so Cable TV and physical remote buttons never break. |
@@ -166,16 +168,40 @@ Unlike other remote apps that force you to keep a computer running or install ad
 
 ---
 
-## 🍿 Recommended Streaming Setup (Zero Stutter)
+## 🍿 Free Unlimited Streaming Stack: Movies, Anime & Web Series
 
-If your TV has limited RAM or an older MediaTek processor, here is the battle-tested streaming combination:
+Turn your budget TV into a powerhouse streaming machine with **zero monthly fees**, zero pop-up ads, and a clean Netflix-style interface:
+
+```text
+[ Stremio TV Interface ]
+           │
+           ├── Torrentio Addon    <-- Pulls high-speed 1080p streams from across the web
+           ├── Anime Kitsu Addon  <-- Complete anime catalog with episodes & metadata
+           │
+           ▼
+[ Native Hardware VLC Player ]    <-- 3,000 ms network cache buffer cushion
+           │
+     Zero Stutter · 1080p Crisp · Instant Seeking · No Black Screen Crashes!
+```
+
+### What You Get:
+* 🎬 **All Movies & Web Series**: Browse trending movies, new releases, and complete TV series in high definition with a modern catalog interface.
+* ⛩️ **Complete Anime Library**: Watch every anime season with Japanese audio, English subtitles, and synchronized episodes via the **Anime Kitsu** addon.
+* ⚡ **1-Tap Remote Quick Launcher**: Tap the **Stremio** or **VLC** button directly on your phone's web remote to launch your streams instantly!
+
+### Hardware Setup for Budget TVs (Prevents Stutter & Freezes):
+Older smart TV chips (like MediaTek MT5863) physically lack 4K decoders. High-bitrate 4K files cause black screens or memory crashes. We configure the perfect hardware-safe balance:
 
 1. **Stremio for Android TV** (`com.stremio.one`):
-   * In **Settings $\rightarrow$ Streaming**, exclude `4k` (budget TV decoders lock up on 4K files).
-   * Set **Default Player** to **External Player**.
+   * Install the Android TV version (`com.stremio.one`).
+   * In **Settings $\rightarrow$ Streaming**:
+     * **Exclude Qualities**: Add `4k,cam,scr` to filter out unsupported high-bitrate files.
+     * **Torrent Profile**: Set to **Fast** for rapid peer discovery.
+     * **Default Player**: Set to **External Player** (routes video to VLC).
 2. **VLC for Android** (`org.videolan.vlc`):
-   * In **Settings $\rightarrow$ Advanced**, set **Network Caching** to `3,000 ms`.
-   * **Result**: Zero video stutter, instant playback scrubbing, and zero UI lockup.
+   * Install the native VLC media player (`org.videolan.vlc`).
+   * In **Settings $\rightarrow$ Advanced $\rightarrow$ Network Caching Value**, set it to **`3,000 ms`**.
+   * **Why this matters**: Stremio's built-in player uses heavy webview overlays that eat RAM on 1GB TVs. VLC is a native C++ player that uses direct hardware video decoders. With a 3-second buffer cushion, you get **zero stutter, instant pause/resume, and zero freezing**!
 
 ---
 
