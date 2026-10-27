@@ -14,93 +14,151 @@ echo  * 24/7 On-TV Standalone Phone Web Remote (Zero-RAM, Auto-Boot)
 echo ===============================================================================
 echo.
 
-:: 1. Check for ADB
+:: 1. CRITICAL PREREQUISITE CHECKS
+echo [PREREQUISITE CHECKLIST]
+echo  [ ] TV is turned ON and awake (not in standby)
+echo  [ ] PC and TV are connected to the EXACT SAME Wi-Fi or Ethernet router
+echo  [ ] Any VPN on this computer (NordVPN, ExpressVPN, Cloudflare Warp) is TURNED OFF
+echo.
+
+:: 2. Check for ADB
 where adb >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [!] ADB is not found in your system PATH.
-    echo     Please install ADB or download Platform-Tools from Google:
-    echo     https://developer.android.com/tools/releases/platform-tools
+    echo [X] ADB is not found in your system PATH.
+    echo.
+    echo     EASY FIX (Choose one):
+    echo     Option A: Download Google Platform-Tools (contains adb.exe):
+    echo               https://developer.android.com/tools/releases/platform-tools
+    echo               Extract it and put adb.exe in this same folder.
+    echo     Option B: If you have winget, open PowerShell and run: winget install Google.PlatformTools
     echo.
     pause
     exit /b 1
 )
 
-:: 2. Auto-Detect or Prompt for TV IP
-echo [*] Checking for connected devices...
-for /f "tokens=1,2" %%A in ('adb devices ^| findstr /r "[0-9]\:[0-9]"') do (
+:: 3. Check for Connected Devices
+echo [*] Scanning for already-connected Android TV devices...
+set "EXISTING_DEV="
+for /f "tokens=1,2" %%A in ('adb devices ^| findstr /r "[0-9]\.[0-9]"') do (
     if "%%B"=="device" (
         set "EXISTING_DEV=%%A"
+    ) else if "%%B"=="unauthorized" (
+        echo.
+        echo [!] TV DETECTED BUT UNAUTHORIZED: %%A
+        echo =======================================================================
+        echo  ACTION REQUIRED ON YOUR TV SCREEN:
+        echo  1. Look at your TV screen right now.
+        echo  2. A popup says: "Allow USB Debugging?"
+        echo  3. Use your TV physical remote to check "[X] Always allow from this computer"
+        echo  4. Click "OK".
+        echo =======================================================================
+        echo.
+        pause
     )
 )
 
 if defined EXISTING_DEV (
-    echo [i] Detected active device: !EXISTING_DEV!
-    set /p "USE_DEV=Use this device? (Y/n): "
+    echo [i] Found active TV connection: !EXISTING_DEV!
+    set /p "USE_DEV=Use this TV? (Y/n): "
     if /i "!USE_DEV!" neq "n" (
         set "TV_TARGET=!EXISTING_DEV!"
         for /f "tokens=1 delims=:" %%C in ("!EXISTING_DEV!") do set "TV_IP=%%C"
-        goto :CONNECTED
+        goto :VERIFY_CONNECTION
     )
 )
 
 :PROMPT_IP
 echo.
-echo Please enter your TV's local IP address (Found in TV Settings - Network):
-set /p "TV_IP=Enter TV IP (e.g. 192.168.1.50): "
+echo -------------------------------------------------------------------------------
+echo How to find your TV's IP address:
+echo  * Android TV / Google TV: Settings -^> Network ^& Internet -^> Your Wi-Fi -^> IP Address
+echo  * Fire TV: Settings -^> My Fire TV -^> About -^> Network -^> IP Address
+echo  * Example format: 192.168.1.50
+echo -------------------------------------------------------------------------------
+set /p "TV_IP=Enter your TV's IP address: "
 if "%TV_IP%"=="" (
     echo [!] IP address cannot be empty.
     goto :PROMPT_IP
 )
 
+:: Clean any accidental port entered by user (e.g. 192.168.1.50:5555 -> 192.168.1.50)
+for /f "tokens=1 delims=:" %%X in ("%TV_IP%") do set "TV_IP=%%X"
+
 echo.
-echo [*] Connecting to %TV_IP%:5555...
+echo [*] Connecting wirelessly to %TV_IP%:5555...
 adb connect %TV_IP%:5555
 set "TV_TARGET=%TV_IP%:5555"
 
-:CONNECTED
+:VERIFY_CONNECTION
 echo.
-echo [*] Verifying connection to %TV_TARGET%...
-adb -s %TV_TARGET% get-state >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [X] Could not connect to %TV_TARGET%.
-    echo     Make sure:
-    echo     1. TV and PC are on the same Wi-Fi / Ethernet network.
-    echo     2. Developer Options and Network/USB Debugging are turned ON on the TV.
+echo [*] Checking connection status...
+set "DEV_STATE="
+for /f "tokens=2" %%S in ('adb devices ^| findstr /c:"%TV_TARGET%"') do set "DEV_STATE=%%S"
+
+if "%DEV_STATE%"=="unauthorized" (
     echo.
-    set /p "RETRY=Try again? (y/n): "
+    echo =======================================================================
+    echo  [!] ACTION REQUIRED: LOOK AT YOUR TV SCREEN RIGHT NOW!
+    echo =======================================================================
+    echo  Your TV is showing a permission popup:
+    echo     "Allow USB debugging? The computer's RSA key fingerprint is..."
+    echo.
+    echo  Step 1: Use your TV remote to check "[X] Always allow from this computer"
+    echo  Step 2: Select "OK"
+    echo =======================================================================
+    echo.
+    echo Press any key AFTER you have clicked OK on your TV...
+    pause >nul
+    adb reconnect >nul 2>&1
+    timeout /t 2 >nul
+    goto :VERIFY_CONNECTION
+)
+
+if "%DEV_STATE%" neq "device" (
+    echo.
+    echo [X] Could not establish connection to %TV_TARGET%.
+    echo.
+    echo  TROUBLESHOOTING CHECKLIST:
+    echo  1. Are PC and TV on the EXACT SAME Wi-Fi router? (Check if PC is on Guest Wi-Fi).
+    echo  2. Is a VPN running on this computer? Turn it OFF!
+    echo  3. Is the TV screen awake and on?
+    echo  4. Did you enable USB/Network Debugging on the TV?
+    echo     (See docs/BRANDS_AND_PLATFORMS.md for brand-specific steps).
+    echo.
+    set /p "RETRY=Would you like to try again? (y/n): "
     if /i "!RETRY!"=="y" goto :PROMPT_IP
     exit /b 1
 )
 
-:: 3. Read Device Info
+:: Read Device Info
 for /f "delims=" %%M in ('adb -s %TV_TARGET% shell getprop ro.product.model 2^>nul') do set "DEVICE_MODEL=%%M"
 for /f "delims=" %%V in ('adb -s %TV_TARGET% shell getprop ro.build.version.release 2^>nul') do set "ANDROID_VER=%%V"
 for /f "delims=" %%B in ('adb -s %TV_TARGET% shell getprop ro.product.board 2^>nul') do set "BOARD_NAME=%%B"
 
 echo.
 echo ===============================================================================
-echo  DEVICE RECOGNIZED:
-echo  - Model   : %DEVICE_MODEL%
-echo  - Android : Version %ANDROID_VER%
-echo  - Board   : %BOARD_NAME%
+echo  SUCCESSFULLY CONNECTED TO TV:
+echo  - TV Model       : %DEVICE_MODEL%
+echo  - Android OS     : Version %ANDROID_VER%
+echo  - Hardware Board : %BOARD_NAME%
 echo ===============================================================================
 echo.
 
-:: 4. Safety Guardrail & Backup
-echo [1/4] Creating safety backup of current package list...
+:: Safety Backup
+echo [1/4] Creating safety backup of your TV's packages...
 set "BACKUP_FILE=tv_backup_%TV_IP%.txt"
 adb -s %TV_TARGET% shell pm list packages -f > "%BACKUP_FILE%"
 echo       [OK] Backup saved to: %BACKUP_FILE%
 
-:: 5. Instant UI Speedup
+:: Instant UI Speedup
 echo.
-echo [2/4] Applying instant UI responsiveness (Zero animation lag)...
+echo [2/4] Speeding up UI (Removing sluggish animation delays)...
 adb -s %TV_TARGET% shell settings put global window_animation_scale 0.0 >nul 2>&1
 adb -s %TV_TARGET% shell settings put global transition_animation_scale 0.0 >nul 2>&1
 adb -s %TV_TARGET% shell settings put global animator_duration_scale 0.0 >nul 2>&1
-echo       [OK] Menu and navigation transitions set to instantaneous.
+echo       [OK] Navigation transitions set to 0.0x (Instant snappy response).
 
-:: 6. Safe System Debloat (Guardrails Active)
+:: Safe System Debloat
 echo.
 echo [3/4] Safely disabling non-essential background telemetry and test shims...
 for %%P in (
@@ -117,11 +175,11 @@ for %%P in (
 ) do (
     adb -s %TV_TARGET% shell pm disable-user --user 0 %%P >nul 2>&1
 )
-echo       [OK] Safe debloat applied (Zero system apps deleted).
+echo       [OK] Safe debloat applied (Zero system files deleted, 100% reversible).
 
-:: 7. Deploy 24/7 On-TV Standalone Web Remote
+:: Deploy 24/7 Standalone Web Remote
 echo.
-echo [4/4] Deploying 24/7 Standalone On-TV Web Remote (Zero-RAM daemon)...
+echo [4/4] Installing 24/7 Standalone Phone Web Remote onto the TV...
 adb -s %TV_TARGET% shell "mkdir -p /data/local/tmp/remote/cgi-bin" >nul 2>&1
 
 :: Push web files
@@ -131,40 +189,44 @@ adb -s %TV_TARGET% push remote/icon.svg /data/local/tmp/remote/ >nul 2>&1
 adb -s %TV_TARGET% push remote/cgi-bin/key.cgi /data/local/tmp/remote/cgi-bin/ >nul 2>&1
 adb -s %TV_TARGET% shell "chmod 755 /data/local/tmp/remote/cgi-bin/key.cgi" >nul 2>&1
 
-:: Push standalone busybox if system does not have it
+:: Push standalone busybox
 adb -s %TV_TARGET% push bin/busybox /data/local/tmp/busybox >nul 2>&1
 adb -s %TV_TARGET% shell "chmod 755 /data/local/tmp/busybox" >nul 2>&1
 
 :: Install autostart receiver APK
 if exist "bin\TVRemoteBoot.apk" (
-    echo       [*] Installing auto-start service (TVRemoteBoot.apk)...
+    echo       [*] Installing auto-boot receiver service (TVRemoteBoot.apk)...
     adb -s %TV_TARGET% install -r bin/TVRemoteBoot.apk >nul 2>&1
 )
 
 :: Start the daemon immediately
 adb -s %TV_TARGET% shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tmp/busybox httpd -p 8080 -h /data/local/tmp/remote || busybox httpd -p 8080 -h /data/local/tmp/remote" >nul 2>&1
 
-echo       [OK] Remote server active on TV port 8080.
+echo       [OK] Remote server is active on TV port 8080.
 echo.
 echo ===============================================================================
 echo                      OPTIMIZATION COMPLETED SUCCESSFULLY!
 echo ===============================================================================
 echo.
 echo  Your TV is now optimized:
-echo  1. Menus and app switching are instant.
-echo  2. Unused background services have been frozen.
-echo  3. Your Standalone 24/7 Phone Remote is LIVE.
+echo  1. Menus and app transitions are instant.
+echo  2. Background telemetry frozen, freeing RAM.
+echo  3. 24/7 Phone Remote is live and running directly inside your TV!
 echo.
-echo  OPEN THIS LINK ON YOUR PHONE (Connected to same Wi-Fi):
+echo  ===============================================================================
+echo   HOW TO OPEN YOUR NEW REMOTE:
+echo   1. Make sure your phone is connected to the SAME Wi-Fi network:
+echo   2. Open your phone's browser (Safari or Chrome) and visit:
 echo.
-echo        http://%TV_IP%:8080
+echo          http://%TV_IP%:8080
 echo.
-echo  (Add it to your phone's Home Screen for a native 1-tap app experience!)
+echo   3. Tap Settings -^> "Add to Home Screen" to install it like a real app!
+echo  ===============================================================================
 echo.
 echo  To revert anything at any time, just run: RESTORE_FACTORY.bat
 echo ===============================================================================
 echo.
-set /p "OPEN_BROWSER=Would you like to open the remote in your browser now? (Y/n): "
+set /p "OPEN_BROWSER=Open the remote URL in your computer's browser now to test? (Y/n): "
 if /i "%OPEN_BROWSER%" neq "n" (
     start http://%TV_IP%:8080
 )

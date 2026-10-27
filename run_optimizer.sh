@@ -18,44 +18,80 @@ echo -e " * Universal Telemetry & Crash Debloat (Safe user-space disable)"
 echo -e " * 24/7 On-TV Standalone Phone Web Remote (Zero-RAM, Auto-Boot)"
 echo -e "${BLUE}===============================================================================${NC}\n"
 
+echo -e "${YELLOW}[CRITICAL PREREQUISITES]${NC}"
+echo -e " 1. TV must be turned ON and awake (not in standby)."
+echo -e " 2. This device and TV must be on the EXACT SAME Wi-Fi or router network."
+echo -e " 3. Turn OFF any active VPN on this device before proceeding.\n"
+
 # Check ADB
 if ! command -v adb &> /dev/null; then
-    echo -e "${RED}[!] ADB is not installed or not in PATH.${NC}"
-    echo -e "    On Ubuntu/Debian: sudo apt install adb"
-    echo -e "    On macOS: brew install android-platform-tools"
+    echo -e "${RED}[X] ADB is not installed or not in PATH.${NC}"
+    echo -e "    On Ubuntu/Debian : sudo apt update && sudo apt install adb"
+    echo -e "    On macOS         : brew install android-platform-tools"
     echo -e "    On Android Termux: pkg install android-tools"
     exit 1
 fi
 
-# Detect device
-EXISTING_DEV=$(adb devices | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+" | awk '{print $1}' | head -n 1)
+# Detect existing device
+EXISTING_DEV=$(adb devices | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+" | head -n 1 | awk '{print $1}')
+DEV_STATE=$(adb devices | grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+" | head -n 1 | awk '{print $2}')
 
-if [ -n "$EXISTING_DEV" ]; then
-    echo -e "${YELLOW}[i] Detected connected TV: $EXISTING_DEV${NC}"
-    read -p "Use this device? (Y/n): " USE_EXISTING
-    if [[ "$USE_EXISTING" =~ ^[Nn]$ ]]; then
-        EXISTING_DEV=""
-    else
+if [ "$DEV_STATE" = "unauthorized" ]; then
+    echo -e "${YELLOW}=======================================================================${NC}"
+    echo -e "${RED}[!] ACTION REQUIRED ON YOUR TV SCREEN:${NC}"
+    echo -e " A popup is showing on your TV: 'Allow USB Debugging?'"
+    echo -e " Use your TV remote to check '[X] Always allow from this computer' and click OK."
+    echo -e "${YELLOW}=======================================================================${NC}"
+    read -p "Press Enter AFTER clicking OK on your TV..."
+    adb reconnect &>/dev/null || true
+    sleep 2
+fi
+
+if [ -n "$EXISTING_DEV" ] && [ "$DEV_STATE" = "device" ]; then
+    echo -e "${GREEN}[i] Detected connected TV: $EXISTING_DEV${NC}"
+    read -p "Use this TV? (Y/n): " USE_EXISTING
+    if [[ ! "$USE_EXISTING" =~ ^[Nn]$ ]]; then
         TV_TARGET="$EXISTING_DEV"
         TV_IP=$(echo "$EXISTING_DEV" | cut -d: -f1)
     fi
 fi
 
-if [ -z "$EXISTING_DEV" ]; then
-    read -p "Enter your TV's local IP address (e.g. 192.168.1.50): " TV_IP
+if [ -z "$TV_TARGET" ]; then
+    echo -e "-------------------------------------------------------------------------------"
+    echo -e "Find TV IP in: Settings -> Network -> Your Wi-Fi -> IP Address"
+    echo -e "-------------------------------------------------------------------------------"
+    read -p "Enter your TV's local IP address (e.g. 192.168.1.50): " RAW_IP
+    TV_IP=$(echo "$RAW_IP" | cut -d: -f1)
     if [ -z "$TV_IP" ]; then
         echo -e "${RED}[!] IP address cannot be empty.${NC}"
         exit 1
     fi
-    echo -e "[*] Connecting to $TV_IP:5555..."
+    echo -e "[*] Connecting wirelessly to $TV_IP:5555..."
     adb connect "$TV_IP:5555"
     TV_TARGET="$TV_IP:5555"
 fi
 
-echo -e "\n[*] Verifying connection to $TV_TARGET..."
-if ! adb -s "$TV_TARGET" get-state &> /dev/null; then
+# Verify state
+CHECK_STATE=$(adb devices | grep "$TV_TARGET" | awk '{print $2}')
+if [ "$CHECK_STATE" = "unauthorized" ]; then
+    echo -e "\n${YELLOW}=======================================================================${NC}"
+    echo -e "${RED}[!] ACTION REQUIRED: LOOK AT YOUR TV SCREEN RIGHT NOW!${NC}"
+    echo -e " A popup says: 'Allow USB debugging?'"
+    echo -e " 1. Check '[X] Always allow from this computer'"
+    echo -e " 2. Click 'OK'"
+    echo -e "${YELLOW}=======================================================================${NC}"
+    read -p "Press Enter AFTER clicking OK on your TV screen..."
+    adb reconnect &>/dev/null || true
+    sleep 2
+    CHECK_STATE=$(adb devices | grep "$TV_TARGET" | awk '{print $2}')
+fi
+
+if [ "$CHECK_STATE" != "device" ]; then
     echo -e "${RED}[X] Could not connect to $TV_TARGET.${NC}"
-    echo -e "    Ensure TV is on the same network and Developer Options/ADB Debugging is ON."
+    echo -e " Troubleshooting:"
+    echo -e " 1. Make sure both devices are on the EXACT SAME Wi-Fi network."
+    echo -e " 2. Turn OFF any active VPN."
+    echo -e " 3. Verify Developer Options / ADB Debugging is ON on the TV."
     exit 1
 fi
 
@@ -64,7 +100,7 @@ VER=$(adb -s "$TV_TARGET" shell getprop ro.build.version.release 2>/dev/null | t
 BOARD=$(adb -s "$TV_TARGET" shell getprop ro.product.board 2>/dev/null | tr -d '\r')
 
 echo -e "\n${BLUE}===============================================================================${NC}"
-echo -e " DEVICE RECOGNIZED: Model: ${GREEN}$MODEL${NC} | Android: ${GREEN}$VER${NC} | Board: ${GREEN}$BOARD${NC}"
+echo -e " CONNECTED TO TV: Model: ${GREEN}$MODEL${NC} | Android: ${GREEN}$VER${NC} | Board: ${GREEN}$BOARD${NC}"
 echo -e "${BLUE}===============================================================================${NC}\n"
 
 # Step 1: Backup
@@ -97,7 +133,7 @@ PACKAGES=(
 for pkg in "${PACKAGES[@]}"; do
     adb -s "$TV_TARGET" shell pm disable-user --user 0 "$pkg" &>/dev/null || true
 done
-echo -e "      ${GREEN}[OK]${NC} Safe debloat applied (Zero system apps deleted)."
+echo -e "      ${GREEN}[OK]${NC} Safe debloat applied (Zero system apps deleted, 100% reversible)."
 
 # Step 4: Standalone On-TV Remote
 echo -e "\n[4/4] Deploying 24/7 Standalone On-TV Web Remote..."
@@ -125,6 +161,9 @@ echo -e "      ${GREEN}[OK]${NC} Remote server is live on TV port 8080."
 echo -e "\n${BLUE}===============================================================================${NC}"
 echo -e "${GREEN}                     OPTIMIZATION COMPLETED SUCCESSFULLY!                      ${NC}"
 echo -e "${BLUE}===============================================================================${NC}"
-echo -e "\nOpen this URL on your phone browser (connected to same Wi-Fi):\n"
-echo -e "     ${YELLOW}http://${TV_IP}:8080${NC}\n"
+echo -e "\nHOW TO OPEN YOUR NEW REMOTE:"
+echo -e "1. Connect your phone to the SAME home Wi-Fi network."
+echo -e "2. Open your phone browser and go to:"
+echo -e "\n     ${YELLOW}http://${TV_IP}:8080${NC}\n"
+echo -e "3. Tap 'Add to Home Screen' in your browser to install it as an app!"
 echo -e "To revert changes at any time, run: ./restore_factory.sh\n"

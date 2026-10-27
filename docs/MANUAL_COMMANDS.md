@@ -4,7 +4,12 @@ If you prefer running commands manually via your terminal instead of the 1-click
 
 ---
 
-## 1. Connect to the TV
+## 1. Prerequisites & Connecting to the TV
+
+Before running any commands:
+1. Ensure your PC and TV are on the **exact same Wi-Fi network** (not guest Wi-Fi).
+2. Turn **OFF any active VPN** on your computer.
+3. Make sure the TV screen is **ON and awake**.
 
 Find your TV's local IP address (e.g., `192.168.1.50`) and connect over the local network:
 
@@ -13,7 +18,13 @@ adb connect 192.168.1.50:5555
 adb devices
 ```
 
-Verify that the state says `device`.
+> ⚠️ **CRITICAL**: If `adb devices` shows `unauthorized`, look at your TV screen! A popup will ask: *"Allow USB debugging?"*. Use your physical TV remote to check **"[X] Always allow from this computer"** and select **OK**.
+
+Verify that `adb devices` now reports `device`:
+```text
+List of devices attached
+192.168.1.50:5555    device
+```
 
 ---
 

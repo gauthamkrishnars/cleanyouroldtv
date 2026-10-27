@@ -8,6 +8,13 @@ This guide ensures anyone—regardless of what TV model, brand, or operating sys
 
 The automated script (`RUN_OPTIMIZER.bat` or `run_optimizer.sh`) supports **any television running Android TV, Google TV, or Fire OS**. 
 
+### ⚠️ Crucial Wi-Fi & Network Rules Before You Begin:
+1. **Same Wi-Fi Network**: Your PC/phone and TV must be connected to the exact same home Wi-Fi router. 
+   *(Do NOT connect to Guest Wi-Fi or phone mobile hotspot, as routers isolate devices on guest networks!)*
+2. **Turn OFF VPN**: Make sure any VPN (NordVPN, ExpressVPN, Warp) on your PC or phone is turned OFF.
+3. **Keep TV Screen Awake**: The TV must be powered on and showing the home screen.
+4. **Watch for the TV Screen Prompt**: When connecting, a popup will ask *"Allow USB Debugging?"*. Use your TV remote to check **"[X] Always allow"** and click **OK**.
+
 ### Tested & Supported Brands:
 * **Budget & Value Brands**: Lloyd, Thomson, Kodak, Vu, Blaupunkt, MarQ, Coocaa, Daiwa, Shinco, BPL, Sansui, Micromax, Intex.
 * **Mainstream Android TVs**: Xiaomi (Mi TV / Redmi TV), TCL, Realme, OnePlus, Hisense, Motorola, Nokia, Sharp, Toshiba.
