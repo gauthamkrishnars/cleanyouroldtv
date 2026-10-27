@@ -95,6 +95,21 @@ if [ -n "$key" ]; then
             printf "POWER\n"
             exit 0
             ;;
+        setup_addons|install_addons)
+            (
+                am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json"
+                sleep 2
+                input keyevent 22
+                input keyevent 66
+                sleep 1
+                am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json"
+                sleep 2
+                input keyevent 22
+                input keyevent 66
+            ) </dev/null >/dev/null 2>&1 &
+            printf "ADDONS_TRIGGERED\n"
+            exit 0
+            ;;
     esac
 
     hw_code=""

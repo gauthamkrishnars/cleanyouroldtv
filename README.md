@@ -43,8 +43,8 @@ After a year or two of updates and usage, they slow down to a crawl:
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="assets/home_clean.png" width="48%" alt="Clean TV Home Screen" />
-  <img src="assets/stremio_live.png" width="48%" alt="Smooth Streaming Setup" />
+  <img src="assets/stock_current.png" width="48%" alt="Stock TV Home Screen (Cable Tuner Preserved)" />
+  <img src="assets/stremio_state.png" width="48%" alt="Stremio Streaming Movies and Series" />
 </p>
 
 ---

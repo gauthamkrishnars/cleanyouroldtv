@@ -158,6 +158,24 @@ adb -s "$TV_TARGET" shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tm
 
 echo -e "      ${GREEN}[OK]${NC} Remote server is live on TV port 8080."
 
+# Auto-inject Stremio addons if present
+if adb -s "$TV_TARGET" shell pm path com.stremio.one &>/dev/null; then
+    echo -e "\n[*] Stremio detected! Auto-injecting Torrentio & Anime Kitsu addons..."
+    adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" &>/dev/null || true
+    sleep 2
+    adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
+    adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
+    sleep 1
+    adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json" &>/dev/null || true
+    sleep 2
+    adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
+    adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
+    echo -e "      ${GREEN}[OK]${NC} Free streaming addons injected into Stremio!"
+else
+    echo -e "\n[i] Note: Whenever you install Stremio, tap 'Free Media' on your Phone Remote"
+    echo -e "    to auto-inject Torrentio & Anime Kitsu addons with 1 tap!"
+fi
+
 echo -e "\n${BLUE}===============================================================================${NC}"
 echo -e "${GREEN}                     OPTIMIZATION COMPLETED SUCCESSFULLY!                      ${NC}"
 echo -e "${BLUE}===============================================================================${NC}"

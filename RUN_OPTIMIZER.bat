@@ -203,6 +203,27 @@ if exist "bin\TVRemoteBoot.apk" (
 adb -s %TV_TARGET% shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tmp/busybox httpd -p 8080 -h /data/local/tmp/remote || busybox httpd -p 8080 -h /data/local/tmp/remote" >nul 2>&1
 
 echo       [OK] Remote server is active on TV port 8080.
+
+:: Check & Inject Stremio Free Streaming Addons (Torrentio + Anime Kitsu)
+echo.
+adb -s %TV_TARGET% shell pm path com.stremio.one >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [i] Stremio detected on your TV!
+    echo     Auto-injecting Torrentio (Movies/Series) and Anime Kitsu addons...
+    adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" >nul 2>&1
+    timeout /t 2 >nul
+    adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
+    adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
+    timeout /t 1 >nul
+    adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json" >nul 2>&1
+    timeout /t 2 >nul
+    adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
+    adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
+    echo       [OK] Torrentio & Anime Kitsu successfully injected into Stremio!
+) else (
+    echo [i] Stremio is not yet installed. Whenever you install Stremio, you can tap
+    echo     "Free Media" directly on your Phone Remote to auto-install addons anytime!
+)
 echo.
 echo ===============================================================================
 echo                      OPTIMIZATION COMPLETED SUCCESSFULLY!
