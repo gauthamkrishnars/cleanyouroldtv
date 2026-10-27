@@ -11,7 +11,7 @@ NC='\033[0m'
 echo -e "${BLUE}===============================================================================${NC}"
 echo -e "${GREEN}                  CLEANYOUROLDTV - 1-CLICK TV RESURRECTION                     ${NC}"
 echo -e "${BLUE}===============================================================================${NC}"
-echo -e " Resurrect any sluggish Android / Google TV (1GB RAM or less) in 60 seconds."
+echo -e " Speed up budget Android / Google TVs (1GB RAM or less) over local Wi-Fi."
 echo -e " * 100% Safe (No bricking, No root required, Zero system files deleted)"
 echo -e " * Instant Snappy UI (0.0x Animation Scaling)"
 echo -e " * Universal Telemetry & Crash Debloat (Safe user-space disable)"
@@ -103,85 +103,116 @@ echo -e "\n${BLUE}==============================================================
 echo -e " CONNECTED TO TV: Model: ${GREEN}$MODEL${NC} | Android: ${GREEN}$VER${NC} | Board: ${GREEN}$BOARD${NC}"
 echo -e "${BLUE}===============================================================================${NC}\n"
 
-# Step 1: Backup
-echo -e "[1/4] Creating safety backup of current package list..."
+# Step 1: Backup (Always Created)
+echo -e "[*] Creating safety backup of current package list..."
 adb -s "$TV_TARGET" shell pm list packages -f > "tv_backup_${TV_IP}.txt"
-echo -e "      ${GREEN}[OK]${NC} Backup saved to tv_backup_${TV_IP}.txt"
+echo -e "    ${GREEN}[OK]${NC} Backup saved to tv_backup_${TV_IP}.txt\n"
 
-# Step 2: Instant Animations
-echo -e "\n[2/4] Applying instant UI responsiveness (0.0x animations)..."
-adb -s "$TV_TARGET" shell settings put global window_animation_scale 0.0 &>/dev/null
-adb -s "$TV_TARGET" shell settings put global transition_animation_scale 0.0 &>/dev/null
-adb -s "$TV_TARGET" shell settings put global animator_duration_scale 0.0 &>/dev/null
-echo -e "      ${GREEN}[OK]${NC} Menus and transitions now open instantaneously."
+# Interactive Selection Menu
+echo -e "${BLUE}===============================================================================${NC}"
+echo -e " CHOOSE WHAT YOU WANT TO DO:"
+echo -e "${BLUE}===============================================================================${NC}"
+echo -e " [1] Optimize TV Only (Instant UI animations + safe debloat)"
+echo -e " [2] Install 24/7 Phone Remote Only (Touchpad, keyboard, zero-RAM web remote)"
+echo -e " [3] Free Streaming Setup Only (Stremio Addons: Torrentio & Anime Kitsu)"
+echo -e " [4] Everything (Recommended - All of the above)"
+echo -e "${BLUE}===============================================================================${NC}"
+read -p "Enter choice [1, 2, 3, or 4] (Default is 4): " USER_CHOICE
+USER_CHOICE=${USER_CHOICE:-4}
 
-# Step 3: Safe Debloat
-echo -e "\n[3/4] Safely disabling non-essential background telemetry and test shims..."
-PACKAGES=(
-    "com.example.user.myapplication"
-    "com.android.cts.priv.ctsshim"
-    "com.android.cts.ctsshim"
-    "com.mediatek.androidbox"
-    "com.android.printservice.recommendation"
-    "com.google.android.feedback"
-    "com.android.providers.blockednumber"
-    "com.android.pacprocessor"
-    "com.google.android.onetimeinitializer"
-    "com.google.android.gsf.notouch"
-)
+DO_OPT=0
+DO_REMOTE=0
+DO_STREAM=0
 
-for pkg in "${PACKAGES[@]}"; do
-    adb -s "$TV_TARGET" shell pm disable-user --user 0 "$pkg" &>/dev/null || true
-done
-echo -e "      ${GREEN}[OK]${NC} Safe debloat applied (Zero system apps deleted, 100% reversible)."
+case "$USER_CHOICE" in
+    1) DO_OPT=1 ;;
+    2) DO_REMOTE=1 ;;
+    3) DO_STREAM=1 ;;
+    *) DO_OPT=1; DO_REMOTE=1; DO_STREAM=1 ;;
+esac
 
-# Step 4: Standalone On-TV Remote
-echo -e "\n[4/4] Deploying 24/7 Standalone On-TV Web Remote..."
-adb -s "$TV_TARGET" shell "mkdir -p /data/local/tmp/remote/cgi-bin" &>/dev/null
+# 1. UI Optimization
+if [ "$DO_OPT" -eq 1 ]; then
+    echo -e "\n[*] Applying instant UI responsiveness (0.0x animations)..."
+    adb -s "$TV_TARGET" shell settings put global window_animation_scale 0.0 &>/dev/null
+    adb -s "$TV_TARGET" shell settings put global transition_animation_scale 0.0 &>/dev/null
+    adb -s "$TV_TARGET" shell settings put global animator_duration_scale 0.0 &>/dev/null
+    echo -e "    ${GREEN}[OK]${NC} Menus and transitions now open instantaneously."
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/index.html" /data/local/tmp/remote/ &>/dev/null
-adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/manifest.json" /data/local/tmp/remote/ &>/dev/null
-adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/icon.svg" /data/local/tmp/remote/ &>/dev/null
-adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/cgi-bin/key.cgi" /data/local/tmp/remote/cgi-bin/ &>/dev/null
-adb -s "$TV_TARGET" shell "chmod 755 /data/local/tmp/remote/cgi-bin/key.cgi" &>/dev/null
+    echo -e "\n[*] Safely disabling non-essential background telemetry and test shims..."
+    PACKAGES=(
+        "com.example.user.myapplication"
+        "com.android.cts.priv.ctsshim"
+        "com.android.cts.ctsshim"
+        "com.mediatek.androidbox"
+        "com.android.printservice.recommendation"
+        "com.google.android.feedback"
+        "com.android.providers.blockednumber"
+        "com.android.pacprocessor"
+        "com.google.android.onetimeinitializer"
+        "com.google.android.gsf.notouch"
+    )
 
-adb -s "$TV_TARGET" push "$SCRIPT_DIR/bin/busybox" /data/local/tmp/busybox &>/dev/null
-adb -s "$TV_TARGET" shell "chmod 755 /data/local/tmp/busybox" &>/dev/null
-
-if [ -f "$SCRIPT_DIR/bin/TVRemoteBoot.apk" ]; then
-    echo -e "      [*] Installing auto-start helper (TVRemoteBoot.apk)..."
-    adb -s "$TV_TARGET" install -r "$SCRIPT_DIR/bin/TVRemoteBoot.apk" &>/dev/null || true
+    for pkg in "${PACKAGES[@]}"; do
+        adb -s "$TV_TARGET" shell pm disable-user --user 0 "$pkg" &>/dev/null || true
+    done
+    echo -e "    ${GREEN}[OK]${NC} Safe debloat applied (Zero system apps deleted, 100% reversible)."
 fi
 
-adb -s "$TV_TARGET" shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tmp/busybox httpd -p 8080 -h /data/local/tmp/remote || busybox httpd -p 8080 -h /data/local/tmp/remote" &>/dev/null
+# 2. Standalone Web Remote
+if [ "$DO_REMOTE" -eq 1 ]; then
+    echo -e "\n[*] Deploying 24/7 Standalone On-TV Web Remote..."
+    adb -s "$TV_TARGET" shell "mkdir -p /data/local/tmp/remote/cgi-bin" &>/dev/null
 
-echo -e "      ${GREEN}[OK]${NC} Remote server is live on TV port 8080."
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/index.html" /data/local/tmp/remote/ &>/dev/null
+    adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/manifest.json" /data/local/tmp/remote/ &>/dev/null
+    adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/icon.svg" /data/local/tmp/remote/ &>/dev/null
+    adb -s "$TV_TARGET" push "$SCRIPT_DIR/remote/cgi-bin/key.cgi" /data/local/tmp/remote/cgi-bin/ &>/dev/null
+    adb -s "$TV_TARGET" shell "chmod 755 /data/local/tmp/remote/cgi-bin/key.cgi" &>/dev/null
 
-# Auto-inject Stremio addons if present
-if adb -s "$TV_TARGET" shell pm path com.stremio.one &>/dev/null; then
-    echo -e "\n[*] Stremio detected! Auto-injecting Torrentio & Anime Kitsu addons..."
-    adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" &>/dev/null || true
-    sleep 2
-    adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
-    adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
-    sleep 1
-    adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json" &>/dev/null || true
-    sleep 2
-    adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
-    adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
-    echo -e "      ${GREEN}[OK]${NC} Free streaming addons injected into Stremio!"
-else
-    echo -e "\n[i] Note: Whenever you install Stremio, tap 'Free Media' on your Phone Remote"
-    echo -e "    to auto-inject Torrentio & Anime Kitsu addons with 1 tap!"
+    adb -s "$TV_TARGET" push "$SCRIPT_DIR/bin/busybox" /data/local/tmp/busybox &>/dev/null
+    adb -s "$TV_TARGET" shell "chmod 755 /data/local/tmp/busybox" &>/dev/null
+
+    if [ -f "$SCRIPT_DIR/bin/TVRemoteBoot.apk" ]; then
+        echo -e "    [*] Installing auto-start helper (TVRemoteBoot.apk)..."
+        adb -s "$TV_TARGET" install -r "$SCRIPT_DIR/bin/TVRemoteBoot.apk" &>/dev/null || true
+    fi
+
+    adb -s "$TV_TARGET" shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tmp/busybox httpd -p 8080 -h /data/local/tmp/remote || busybox httpd -p 8080 -h /data/local/tmp/remote" &>/dev/null
+    echo -e "    ${GREEN}[OK]${NC} Remote server is live on TV port 8080."
+fi
+
+# 3. Free Streaming Setup
+if [ "$DO_STREAM" -eq 1 ]; then
+    if adb -s "$TV_TARGET" shell pm path com.stremio.one &>/dev/null; then
+        echo -e "\n[*] Stremio detected! Auto-injecting Torrentio & Anime Kitsu addons..."
+        adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" &>/dev/null || true
+        sleep 2
+        adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
+        adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
+        sleep 1
+        adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json" &>/dev/null || true
+        sleep 2
+        adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
+        adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
+        echo -e "    ${GREEN}[OK]${NC} Free streaming addons injected into Stremio!"
+    else
+        echo -e "\n[i] Note: Whenever you install Stremio, tap 'Free Media' on your Phone Remote"
+        echo -e "    to auto-inject Torrentio & Anime Kitsu addons with 1 tap!"
+    fi
 fi
 
 echo -e "\n${BLUE}===============================================================================${NC}"
-echo -e "${GREEN}                     OPTIMIZATION COMPLETED SUCCESSFULLY!                      ${NC}"
+echo -e "${GREEN}                           PROCESS COMPLETED!                                  ${NC}"
 echo -e "${BLUE}===============================================================================${NC}"
-echo -e "\nHOW TO OPEN YOUR NEW REMOTE:"
-echo -e "1. Connect your phone to the SAME home Wi-Fi network."
-echo -e "2. Open your phone browser and go to:"
-echo -e "\n     ${YELLOW}http://${TV_IP}:8080${NC}\n"
-echo -e "3. Tap 'Add to Home Screen' in your browser to install it as an app!"
+
+if [ "$DO_REMOTE" -eq 1 ]; then
+    echo -e "\nHOW TO OPEN YOUR NEW REMOTE:"
+    echo -e "1. Connect your phone to the SAME home Wi-Fi network."
+    echo -e "2. Open your phone browser and visit:"
+    echo -e "\n     ${YELLOW}http://${TV_IP}:8080${NC}\n"
+    echo -e "3. Tap 'Add to Home Screen' in your browser to install it as an app!"
+fi
+
 echo -e "To revert changes at any time, run: ./restore_factory.sh\n"

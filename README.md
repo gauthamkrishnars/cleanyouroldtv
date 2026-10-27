@@ -91,7 +91,11 @@ For LG webOS or Samsung Tizen instructions, refer to the [Platform Guide](docs/B
 2. If ADB is not installed on your system, install it via winget (`winget install Google.PlatformTools`) or download Google Platform-Tools and place `adb.exe` in this folder.
 3. Double-click `RUN_OPTIMIZER.bat`.
 4. Enter the TV IP address when prompted (or accept auto-detected device).
-5. Confirm the USB debugging prompt on your TV screen if it appears.
+5. Choose what you want to configure:
+   * `[1] Optimize TV Only`: Sets 0.0x animation scaling and disables background telemetry.
+   * `[2] Install 24/7 Phone Remote Only`: Installs the zero-RAM web remote with touchpad and keyboard.
+   * `[3] Free Streaming Setup Only`: Auto-injects Torrentio and Anime Kitsu addons into Stremio.
+   * `[4] Everything`: Recommended default that runs all of the above.
 
 #### macOS and Linux
 ```bash

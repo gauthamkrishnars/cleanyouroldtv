@@ -6,7 +6,7 @@ color 0B
 echo ===============================================================================
 echo                   CLEANYOUROLDTV - 1-CLICK TV RESURRECTION
 echo ===============================================================================
-echo  Resurrect any sluggish Android / Google TV (1GB RAM or less) in 60 seconds.
+echo  Speed up budget Android / Google TVs (1GB RAM or less) over local Wi-Fi.
 echo  * 100% Safe (No bricking, No root required, Zero system files deleted)
 echo  * Instant Snappy UI (0.0x Animation Scaling)
 echo  * Universal Telemetry & Crash Debloat (Safe user-space disable)
@@ -14,7 +14,7 @@ echo  * 24/7 On-TV Standalone Phone Web Remote (Zero-RAM, Auto-Boot)
 echo ===============================================================================
 echo.
 
-:: 1. CRITICAL PREREQUISITE CHECKS
+:: 1. PREREQUISITE CHECKLIST
 echo [PREREQUISITE CHECKLIST]
 echo  [ ] TV is turned ON and awake (not in standby)
 echo  [ ] PC and TV are connected to the EXACT SAME Wi-Fi or Ethernet router
@@ -147,112 +147,168 @@ echo  - Hardware Board : %BOARD_NAME%
 echo ===============================================================================
 echo.
 
-:: Safety Backup
-echo [1/4] Creating safety backup of your TV's packages...
+:: Safety Backup (Always Created)
+echo [*] Creating safety backup of your TV's current package inventory...
 set "BACKUP_FILE=tv_backup_%TV_IP%.txt"
 adb -s %TV_TARGET% shell pm list packages -f > "%BACKUP_FILE%"
-echo       [OK] Backup saved to: %BACKUP_FILE%
+echo     [OK] Safety backup saved to: %BACKUP_FILE%
 
-:: Instant UI Speedup
-echo.
-echo [2/4] Speeding up UI (Removing sluggish animation delays)...
-adb -s %TV_TARGET% shell settings put global window_animation_scale 0.0 >nul 2>&1
-adb -s %TV_TARGET% shell settings put global transition_animation_scale 0.0 >nul 2>&1
-adb -s %TV_TARGET% shell settings put global animator_duration_scale 0.0 >nul 2>&1
-echo       [OK] Navigation transitions set to 0.0x (Instant snappy response).
-
-:: Safe System Debloat
-echo.
-echo [3/4] Safely disabling non-essential background telemetry and test shims...
-for %%P in (
-    com.example.user.myapplication
-    com.android.cts.priv.ctsshim
-    com.android.cts.ctsshim
-    com.mediatek.androidbox
-    com.android.printservice.recommendation
-    com.google.android.feedback
-    com.android.providers.blockednumber
-    com.android.pacprocessor
-    com.google.android.onetimeinitializer
-    com.google.android.gsf.notouch
-) do (
-    adb -s %TV_TARGET% shell pm disable-user --user 0 %%P >nul 2>&1
-)
-echo       [OK] Safe debloat applied (Zero system files deleted, 100% reversible).
-
-:: Deploy 24/7 Standalone Web Remote
-echo.
-echo [4/4] Installing 24/7 Standalone Phone Web Remote onto the TV...
-adb -s %TV_TARGET% shell "mkdir -p /data/local/tmp/remote/cgi-bin" >nul 2>&1
-
-:: Push web files
-adb -s %TV_TARGET% push remote/index.html /data/local/tmp/remote/ >nul 2>&1
-adb -s %TV_TARGET% push remote/manifest.json /data/local/tmp/remote/ >nul 2>&1
-adb -s %TV_TARGET% push remote/icon.svg /data/local/tmp/remote/ >nul 2>&1
-adb -s %TV_TARGET% push remote/cgi-bin/key.cgi /data/local/tmp/remote/cgi-bin/ >nul 2>&1
-adb -s %TV_TARGET% shell "chmod 755 /data/local/tmp/remote/cgi-bin/key.cgi" >nul 2>&1
-
-:: Push standalone busybox
-adb -s %TV_TARGET% push bin/busybox /data/local/tmp/busybox >nul 2>&1
-adb -s %TV_TARGET% shell "chmod 755 /data/local/tmp/busybox" >nul 2>&1
-
-:: Install autostart receiver APK
-if exist "bin\TVRemoteBoot.apk" (
-    echo       [*] Installing auto-boot receiver service (TVRemoteBoot.apk)...
-    adb -s %TV_TARGET% install -r bin/TVRemoteBoot.apk >nul 2>&1
-)
-
-:: Start the daemon immediately
-adb -s %TV_TARGET% shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tmp/busybox httpd -p 8080 -h /data/local/tmp/remote || busybox httpd -p 8080 -h /data/local/tmp/remote" >nul 2>&1
-
-echo       [OK] Remote server is active on TV port 8080.
-
-:: Check & Inject Stremio Free Streaming Addons (Torrentio + Anime Kitsu)
-echo.
-adb -s %TV_TARGET% shell pm path com.stremio.one >nul 2>&1
-if %errorlevel% equ 0 (
-    echo [i] Stremio detected on your TV!
-    echo     Auto-injecting Torrentio (Movies/Series) and Anime Kitsu addons...
-    adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" >nul 2>&1
-    timeout /t 2 >nul
-    adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
-    adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
-    timeout /t 1 >nul
-    adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json" >nul 2>&1
-    timeout /t 2 >nul
-    adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
-    adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
-    echo       [OK] Torrentio & Anime Kitsu successfully injected into Stremio!
-) else (
-    echo [i] Stremio is not yet installed. Whenever you install Stremio, you can tap
-    echo     "Free Media" directly on your Phone Remote to auto-install addons anytime!
-)
+:: Interactive Selection Menu
+:SHOW_MENU
 echo.
 echo ===============================================================================
-echo                      OPTIMIZATION COMPLETED SUCCESSFULLY!
+echo  CHOOSE WHAT YOU WANT TO DO:
 echo ===============================================================================
+echo  [1] Optimize TV Only
+echo      - Remove sluggish animation delays (0.0x instant scaling)
+echo      - Freeze background telemetry and OEM test bloat (save RAM)
 echo.
-echo  Your TV is now optimized:
-echo  1. Menus and app transitions are instant.
-echo  2. Background telemetry frozen, freeing RAM.
-echo  3. 24/7 Phone Remote is live and running directly inside your TV!
+echo  [2] Install 24/7 Phone Remote Only
+echo      - Touchpad, D-pad, live keyboard typing, and RAM cleaner
+echo      - Zero-RAM BusyBox daemon with auto-boot on TV power-on
 echo.
-echo  ===============================================================================
-echo   HOW TO OPEN YOUR NEW REMOTE:
-echo   1. Make sure your phone is connected to the SAME Wi-Fi network:
-echo   2. Open your phone's browser (Safari or Chrome) and visit:
+echo  [3] Free Streaming Setup Only (Stremio Addons)
+echo      - Automatically inject Torrentio (Movies/Series) and Anime Kitsu
 echo.
-echo          http://%TV_IP%:8080
-echo.
-echo   3. Tap Settings -^> "Add to Home Screen" to install it like a real app!
-echo  ===============================================================================
-echo.
-echo  To revert anything at any time, just run: RESTORE_FACTORY.bat
+echo  [4] Everything (Recommended)
+echo      - Apply TV speedup, install web remote, and configure streaming addons
 echo ===============================================================================
-echo.
-set /p "OPEN_BROWSER=Open the remote URL in your computer's browser now to test? (Y/n): "
-if /i "%OPEN_BROWSER%" neq "n" (
-    start http://%TV_IP%:8080
+set "USER_CHOICE=4"
+set /p "USER_CHOICE=Enter choice [1, 2, 3, or 4] (Default is 4): "
+
+if "%USER_CHOICE%"=="1" goto :DO_OPTIMIZE
+if "%USER_CHOICE%"=="2" goto :DO_REMOTE
+if "%USER_CHOICE%"=="3" goto :DO_STREAMING
+if "%USER_CHOICE%"=="4" goto :DO_ALL
+
+echo [!] Invalid choice. Please select 1, 2, 3, or 4.
+goto :SHOW_MENU
+
+:DO_ALL
+set "FLAG_OPT=1"
+set "FLAG_REMOTE=1"
+set "FLAG_STREAM=1"
+goto :EXECUTE
+
+:DO_OPTIMIZE
+set "FLAG_OPT=1"
+set "FLAG_REMOTE=0"
+set "FLAG_STREAM=0"
+goto :EXECUTE
+
+:DO_REMOTE
+set "FLAG_OPT=0"
+set "FLAG_REMOTE=1"
+set "FLAG_STREAM=0"
+goto :EXECUTE
+
+:DO_STREAMING
+set "FLAG_OPT=0"
+set "FLAG_REMOTE=0"
+set "FLAG_STREAM=1"
+goto :EXECUTE
+
+:EXECUTE
+:: 1. TV Optimization Execution
+if "%FLAG_OPT%"=="1" (
+    echo.
+    echo [*] Speeding up UI (Removing sluggish animation delays)...
+    adb -s %TV_TARGET% shell settings put global window_animation_scale 0.0 >nul 2>&1
+    adb -s %TV_TARGET% shell settings put global transition_animation_scale 0.0 >nul 2>&1
+    adb -s %TV_TARGET% shell settings put global animator_duration_scale 0.0 >nul 2>&1
+    echo     [OK] Navigation transitions set to 0.0x (Instant snappy response).
+
+    echo.
+    echo [*] Safely disabling non-essential background telemetry and test shims...
+    for %%P in (
+        com.example.user.myapplication
+        com.android.cts.priv.ctsshim
+        com.android.cts.ctsshim
+        com.mediatek.androidbox
+        com.android.printservice.recommendation
+        com.google.android.feedback
+        com.android.providers.blockednumber
+        com.android.pacprocessor
+        com.google.android.onetimeinitializer
+        com.google.android.gsf.notouch
+    ) do (
+        adb -s %TV_TARGET% shell pm disable-user --user 0 %%P >nul 2>&1
+    )
+    echo     [OK] Safe debloat applied (Zero system files deleted, 100% reversible).
 )
+
+:: 2. Phone Web Remote Deployment
+if "%FLAG_REMOTE%"=="1" (
+    echo.
+    echo [*] Installing 24/7 Standalone Phone Web Remote onto the TV...
+    adb -s %TV_TARGET% shell "mkdir -p /data/local/tmp/remote/cgi-bin" >nul 2>&1
+
+    adb -s %TV_TARGET% push remote/index.html /data/local/tmp/remote/ >nul 2>&1
+    adb -s %TV_TARGET% push remote/manifest.json /data/local/tmp/remote/ >nul 2>&1
+    adb -s %TV_TARGET% push remote/icon.svg /data/local/tmp/remote/ >nul 2>&1
+    adb -s %TV_TARGET% push remote/cgi-bin/key.cgi /data/local/tmp/remote/cgi-bin/ >nul 2>&1
+    adb -s %TV_TARGET% shell "chmod 755 /data/local/tmp/remote/cgi-bin/key.cgi" >nul 2>&1
+
+    adb -s %TV_TARGET% push bin/busybox /data/local/tmp/busybox >nul 2>&1
+    adb -s %TV_TARGET% shell "chmod 755 /data/local/tmp/busybox" >nul 2>&1
+
+    if exist "bin\TVRemoteBoot.apk" (
+        echo     [*] Installing auto-boot receiver service (TVRemoteBoot.apk)...
+        adb -s %TV_TARGET% install -r bin/TVRemoteBoot.apk >nul 2>&1
+    )
+
+    adb -s %TV_TARGET% shell "pgrep -f 'busybox httpd' >/dev/null || /data/local/tmp/busybox httpd -p 8080 -h /data/local/tmp/remote || busybox httpd -p 8080 -h /data/local/tmp/remote" >nul 2>&1
+    echo     [OK] Remote server is active on TV port 8080.
+)
+
+:: 3. Free Streaming Setup (Stremio Addons)
+if "%FLAG_STREAM%"=="1" (
+    echo.
+    echo [*] Checking Stremio setup...
+    adb -s %TV_TARGET% shell pm path com.stremio.one >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo     [i] Stremio detected! Injecting Torrentio & Anime Kitsu addons...
+        adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" >nul 2>&1
+        timeout /t 2 >nul
+        adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
+        adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
+        timeout /t 1 >nul
+        adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json" >nul 2>&1
+        timeout /t 2 >nul
+        adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
+        adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
+        echo     [OK] Torrentio & Anime Kitsu successfully injected into Stremio!
+    ) else (
+        echo     [i] Stremio is not currently installed on your TV.
+        echo         Install Stremio from your TV's Play Store or stremio.com.
+        echo         After installing, tap "Free Media" on your Phone Remote to auto-install addons!
+    )
+)
+
+echo.
+echo ===============================================================================
+echo                           PROCESS COMPLETED!
+echo ===============================================================================
+if "%FLAG_REMOTE%"=="1" (
+    echo.
+    echo  ===========================================================================
+    echo   YOUR 24/7 PHONE REMOTE IS LIVE:
+    echo   1. Ensure your phone is connected to the same home Wi-Fi.
+    echo   2. Open your phone's browser and visit:
+    echo.
+    echo          http://%TV_IP%:8080
+    echo.
+    echo   3. Tap Settings -^> "Add to Home Screen" to install it as an app!
+    echo  ===========================================================================
+    echo.
+    set /p "OPEN_BROWSER=Open the remote URL in your browser now to test? (Y/n): "
+    if /i "!OPEN_BROWSER!" neq "n" (
+        start http://%TV_IP%:8080
+    )
+)
+
+echo.
+echo  To revert any changes back to factory default, run: RESTORE_FACTORY.bat
+echo ===============================================================================
 echo.
 pause
