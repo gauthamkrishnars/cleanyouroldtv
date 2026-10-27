@@ -266,37 +266,57 @@ if "%FLAG_STREAM%"=="1" (
     echo.
     echo [*] Checking media streaming apps (Stremio and VLC)...
     
-    :: Sideload Stremio if APK exists locally
+    :: Sideload Stremio
     adb -s %TV_TARGET% shell pm path com.stremio.one >nul 2>&1
     if %errorlevel% neq 0 (
         set "STREMIO_APK="
         if exist "Stremio_TV.apk" set "STREMIO_APK=Stremio_TV.apk"
         if exist "bin\Stremio_TV.apk" set "STREMIO_APK=bin\Stremio_TV.apk"
+        if not defined STREMIO_APK (
+            echo     [*] Stremio APK not found locally. Downloading official Stremio Android TV APK...
+            curl.exe -V >nul 2>&1
+            if %errorlevel% equ 0 (
+                curl.exe -L --progress-bar -o Stremio_TV.apk "https://dl.strem.io/android/v1.10.4-androidTV/com.stremio.one-1.10.4-31048580-armeabi-v7a.apk"
+            ) else (
+                powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://dl.strem.io/android/v1.10.4-androidTV/com.stremio.one-1.10.4-31048580-armeabi-v7a.apk', 'Stremio_TV.apk')"
+            )
+            if exist "Stremio_TV.apk" set "STREMIO_APK=Stremio_TV.apk"
+        )
         if defined STREMIO_APK (
             echo     [*] Sideloading Stremio Android TV APK wirelessly over ADB...
             adb -s %TV_TARGET% install -r "!STREMIO_APK!" >nul 2>&1
             echo     [OK] Stremio sideloaded successfully!
         ) else (
-            echo     [i] Stremio is not currently installed on your TV.
-            echo         You can download the official Android TV APK from stremio.com/download
-            echo         and place Stremio_TV.apk in this folder to sideload it automatically.
+            echo     [!] Failed to download Stremio APK automatically.
+            echo         You can download Stremio Android TV APK from https://stremio.com/download
+            echo         and place Stremio_TV.apk in this folder.
         )
     )
 
-    :: Sideload VLC if APK exists locally
+    :: Sideload VLC
     adb -s %TV_TARGET% shell pm path org.videolan.vlc >nul 2>&1
     if %errorlevel% neq 0 (
         set "VLC_APK="
         if exist "vlc.apk" set "VLC_APK=vlc.apk"
         if exist "bin\vlc.apk" set "VLC_APK=bin\vlc.apk"
+        if not defined VLC_APK (
+            echo     [*] VLC APK not found locally. Downloading official VLC for Android APK...
+            curl.exe -V >nul 2>&1
+            if %errorlevel% equ 0 (
+                curl.exe -L --progress-bar -o vlc.apk "https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-armeabi-v7a.apk"
+            ) else (
+                powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-armeabi-v7a.apk', 'vlc.apk')"
+            )
+            if exist "vlc.apk" set "VLC_APK=vlc.apk"
+        )
         if defined VLC_APK (
             echo     [*] Sideloading VLC for Android APK wirelessly over ADB...
             adb -s %TV_TARGET% install -r "!VLC_APK!" >nul 2>&1
             echo     [OK] VLC sideloaded successfully!
         ) else (
-            echo     [i] VLC is not currently installed on your TV.
-            echo         You can download the official ARM APK from get.videolan.org/vlc-android
-            echo         and place vlc.apk in this folder to sideload it automatically.
+            echo     [!] Failed to download VLC APK automatically.
+            echo         You can download VLC ARM APK from https://get.videolan.org/vlc-android
+            echo         and place vlc.apk in this folder.
         )
     )
 

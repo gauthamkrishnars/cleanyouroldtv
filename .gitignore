@@ -2,6 +2,10 @@
 tv_backup_*.txt
 *.log
 
+# Large downloaded APKs
+Stremio_TV.apk
+vlc.apk
+
 # OS generated files
 .DS_Store
 Thumbs.db

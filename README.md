@@ -158,12 +158,12 @@ The web remote runs directly on the television without requiring a host computer
 
 ## Free Streaming Stack (Stremio and VLC)
 
-Budget and older Android TVs frequently have broken, deprecated, or uncertified app stores where modern streaming apps are unavailable. To avoid using USB thumb drives or struggling with obsolete stores, CleanYourOldTV supports wireless sideloading directly over ADB.
+Budget and older Android TVs frequently have broken, deprecated, or uncertified app stores where modern streaming apps are unavailable. To avoid using USB thumb drives or struggling with obsolete stores, CleanYourOldTV provides automated wireless sideloading directly over ADB.
 
-1. **Obtaining Stremio and VLC APKs**:
-   * Stremio Android TV (`com.stremio.one`): Download the official ARM APK from `stremio.com/download` (save as `Stremio_TV.apk`).
-   * VLC for Android (`org.videolan.vlc`): Download the official ARM APK from `get.videolan.org/vlc-android` (save as `vlc.apk`).
-   * If you place `Stremio_TV.apk` and `vlc.apk` inside the project folder, the script will automatically sideload and install them to your TV over Wi-Fi. Alternatively, install them manually using `adb install -r <apk_name>`.
+1. **Automatic Wireless Sideloading**:
+   * The optimizer checks if Stremio Android TV (`com.stremio.one`) and VLC (`org.videolan.vlc`) are installed on your television.
+   * If not found, the script automatically downloads the official ARM APKs directly from Stremio and VideoLAN servers and sideloads them wirelessly over ADB. No USB drives or manual downloading required.
+   * If you prefer to supply your own APK files, placing `Stremio_TV.apk` and `vlc.apk` in the root folder will use your local copies.
 2. **Automatic Addon Configuration**:
    * Open Stremio on your TV and log in with a free account once so your addon preferences persist.
    * Run `RUN_OPTIMIZER.bat` (Option 3 or 4) or tap **Free Media** on your mobile web remote.

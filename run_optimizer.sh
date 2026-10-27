@@ -187,35 +187,53 @@ fi
 if [ "$DO_STREAM" -eq 1 ]; then
     echo -e "\n[*] Checking media streaming apps (Stremio and VLC)..."
 
-    # Sideload Stremio if APK exists locally
+    # Sideload Stremio
     if ! adb -s "$TV_TARGET" shell pm path com.stremio.one &>/dev/null; then
         STREMIO_APK=""
         [ -f "$SCRIPT_DIR/Stremio_TV.apk" ] && STREMIO_APK="$SCRIPT_DIR/Stremio_TV.apk"
         [ -f "$SCRIPT_DIR/bin/Stremio_TV.apk" ] && STREMIO_APK="$SCRIPT_DIR/bin/Stremio_TV.apk"
+        if [ -z "$STREMIO_APK" ]; then
+            echo -e "    [*] Stremio APK not found locally. Downloading official Stremio Android TV APK..."
+            if command -v curl &>/dev/null; then
+                curl -L --progress-bar -o "$SCRIPT_DIR/Stremio_TV.apk" "https://dl.strem.io/android/v1.10.4-androidTV/com.stremio.one-1.10.4-31048580-armeabi-v7a.apk"
+            elif command -v wget &>/dev/null; then
+                wget -q --show-progress -O "$SCRIPT_DIR/Stremio_TV.apk" "https://dl.strem.io/android/v1.10.4-androidTV/com.stremio.one-1.10.4-31048580-armeabi-v7a.apk"
+            fi
+            [ -f "$SCRIPT_DIR/Stremio_TV.apk" ] && STREMIO_APK="$SCRIPT_DIR/Stremio_TV.apk"
+        fi
         if [ -n "$STREMIO_APK" ]; then
             echo -e "    [*] Sideloading Stremio Android TV APK wirelessly over ADB..."
             adb -s "$TV_TARGET" install -r "$STREMIO_APK" &>/dev/null || true
             echo -e "    ${GREEN}[OK]${NC} Stremio sideloaded successfully!"
         else
-            echo -e "    [i] Stremio is not currently installed on your TV."
-            echo -e "        Download the official Android TV APK from stremio.com/download"
-            echo -e "        and place Stremio_TV.apk in this folder to sideload automatically."
+            echo -e "    [!] Failed to download Stremio APK automatically."
+            echo -e "        Download the official Android TV APK from https://stremio.com/download"
+            echo -e "        and place Stremio_TV.apk in this folder."
         fi
     fi
 
-    # Sideload VLC if APK exists locally
+    # Sideload VLC
     if ! adb -s "$TV_TARGET" shell pm path org.videolan.vlc &>/dev/null; then
         VLC_APK=""
         [ -f "$SCRIPT_DIR/vlc.apk" ] && VLC_APK="$SCRIPT_DIR/vlc.apk"
         [ -f "$SCRIPT_DIR/bin/vlc.apk" ] && VLC_APK="$SCRIPT_DIR/bin/vlc.apk"
+        if [ -z "$VLC_APK" ]; then
+            echo -e "    [*] VLC APK not found locally. Downloading official VLC for Android APK..."
+            if command -v curl &>/dev/null; then
+                curl -L --progress-bar -o "$SCRIPT_DIR/vlc.apk" "https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-armeabi-v7a.apk"
+            elif command -v wget &>/dev/null; then
+                wget -q --show-progress -O "$SCRIPT_DIR/vlc.apk" "https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-armeabi-v7a.apk"
+            fi
+            [ -f "$SCRIPT_DIR/vlc.apk" ] && VLC_APK="$SCRIPT_DIR/vlc.apk"
+        fi
         if [ -n "$VLC_APK" ]; then
             echo -e "    [*] Sideloading VLC for Android APK wirelessly over ADB..."
             adb -s "$TV_TARGET" install -r "$VLC_APK" &>/dev/null || true
             echo -e "    ${GREEN}[OK]${NC} VLC sideloaded successfully!"
         else
-            echo -e "    [i] VLC is not currently installed on your TV."
-            echo -e "        Download the official ARM APK from get.videolan.org/vlc-android"
-            echo -e "        and place vlc.apk in this folder to sideload automatically."
+            echo -e "    [!] Failed to download VLC APK automatically."
+            echo -e "        Download the official ARM APK from https://get.videolan.org/vlc-android"
+            echo -e "        and place vlc.apk in this folder."
         fi
     fi
 
