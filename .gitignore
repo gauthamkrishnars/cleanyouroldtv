@@ -1,0 +1,14 @@
+# Backup files generated on user machines
+tv_backup_*.txt
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & temporary files
+.idea/
+.vscode/
+*.swp
+*.bak

@@ -1,0 +1,16 @@
+{
+  "name": "Lloyd TV Remote",
+  "short_name": "TV Remote",
+  "description": "Zero-latency remote control for Lloyd Smart TV",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1015",
+  "theme_color": "#0f1015",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Smart TV Remote & Touchpad</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f1015">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TV Remote">
+<link rel="apple-touch-icon" href="/icon.svg">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: #0f1015;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    padding: 14px 16px;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .header p {
+    font-size: 0.78rem;
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .header p::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+  .container {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  /* Mode Tabs */
+  .mode-switch {
+    display: flex;
+    background: #181c28;
+    border-radius: 12px;
+    padding: 3px;
+    border: 1px solid #23293a;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .mode-btn.active {
+    background: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+  }
+  /* Button Row Utility */
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .btn-sm {
+    flex: 1;
+    background: #181c28;
+    border: 1px solid #2a334a;
+    color: #cbd5e1;
+    padding: 10px 4px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: background 0.1s, transform 0.05s;
+  }
+  .btn-sm:active {
+    background: #334155;
+    transform: scale(0.96);
+  }
+  .btn-power {
+    background: #7f1d1d;
+    border-color: #991b1b;
+    color: #fca5a5;
+  }
+  .btn-power:active {
+    background: #991b1b;
+  }
+  /* D-Pad Layout */
+  .dpad-wrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 4px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dpad-btn {
+    position: absolute;
+    background: #1e2436;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, transform 0.05s;
+  }
+  .dpad-btn:active {
+    background: #0284c7;
+    color: white;
+    transform: scale(0.92);
+  }
+  .dpad-up    { top: 0; left: 70px; width: 80px; height: 60px; border-radius: 18px 18px 8px 8px; }
+  .dpad-down  { bottom: 0; left: 70px; width: 80px; height: 60px; border-radius: 8px 8px 18px 18px; }
+  .dpad-left  { top: 70px; left: 0; width: 60px; height: 80px; border-radius: 18px 8px 8px 18px; }
+  .dpad-right { top: 70px; right: 0; width: 60px; height: 80px; border-radius: 8px 18px 18px 8px; }
+  .dpad-center {
+    width: 76px;
+    height: 76px;
+    background: #0284c7;
+    border: 2px solid #38bdf8;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.05s;
+  }
+  .dpad-center:active {
+    background: #0369a1;
+    transform: scale(0.92);
+  }
+  /* Trackpad View */
+  .trackpad-wrapper {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+  .trackpad {
+    width: 100%;
+    height: 240px;
+    background: #131722;
+    border: 2px solid #23293a;
+    border-radius: 18px;
+    position: relative;
+    touch-action: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .trackpad-hint {
+    color: #475569;
+    font-size: 0.8rem;
+    pointer-events: none;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .trackpad-hint span {
+    font-size: 0.7rem;
+    display: block;
+    color: #334155;
+    margin-top: 4px;
+  }
+  .mouse-btn-row {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+  }
+  .mouse-btn {
+    flex: 1;
+    background: #181c28;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 12px 0;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .mouse-btn:active {
+    background: #0284c7;
+    color: white;
+  }
+  .mouse-nudge-row {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .nudge-title {
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-right: 2px;
+  }
+  .nudge-btn {
+    flex: 1;
+    max-width: 44px;
+    height: 32px;
+    background: #181c28;
+    border: 1px solid #2a334a;
+    color: #94a3b8;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nudge-btn:active {
+    background: #0284c7;
+    color: white;
+  }
+  .sensitivity-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-end;
+    margin-bottom: 2px;
+  }
+  .sens-label {
+    font-size: 0.72rem;
+    color: #64748b;
+  }
+  .sens-btn {
+    background: #181c28;
+    border: 1px solid #2a334a;
+    color: #94a3b8;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .sens-btn.active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+  /* Action Rows */
+  .action-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .action-btn {
+    flex: 1;
+    background: #181c28;
+    border: 1px solid #2a334a;
+    color: #cbd5e1;
+    padding: 10px 0;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .action-btn span {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 400;
+  }
+  .action-btn:active {
+    background: #334155;
+    color: white;
+  }
+  /* Task & Recents Row */
+  .task-row {
+    display: flex;
+    gap: 8px;
+  }
+  .task-btn {
+    flex: 1;
+    background: #181c28;
+    border: 1px solid #2a334a;
+    padding: 9px 0;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .task-btn span {
+    font-size: 0.65rem;
+    font-weight: 400;
+  }
+  .recents-btn {
+    color: #38bdf8;
+    border-color: #0369a1;
+  }
+  .recents-btn span { color: #0284c7; }
+  .recents-btn:active { background: #0369a1; color: white; }
+  .clear-btn {
+    color: #f87171;
+    border-color: #991b1b;
+  }
+  .clear-btn span { color: #ef4444; }
+  .clear-btn:active { background: #991b1b; color: white; }
+  /* Quick App Launchers */
+  .apps-row {
+    display: flex;
+    gap: 6px;
+  }
+  .app-btn {
+    flex: 1;
+    background: #181c28;
+    border: 1px solid #2a334a;
+    color: #94a3b8;
+    padding: 8px 0;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .app-btn:active {
+    background: #0284c7;
+    color: white;
+  }
+  /* Text Input */
+  .text-box {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  .text-box input {
+    flex: 1;
+    background: #181c28;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    color: white;
+    padding: 9px 12px;
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .text-box input:focus {
+    border-color: #38bdf8;
+  }
+  .text-box button {
+    background: #0284c7;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .text-box button:active {
+    transform: scale(0.95);
+  }
+  .footer {
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-top: 6px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="tvTitle">Smart TV Remote</h1>
+  <p>Connected (Kernel Zero-Latency Bridge)</p>
+</div>
+
+<div class="container">
+  <!-- Mode Switcher -->
+  <div class="mode-switch">
+    <button class="mode-btn active" id="tabDpad" onclick="switchMode('dpad')">🔘 D-Pad Remote</button>
+    <button class="mode-btn" id="tabMouse" onclick="switchMode('mouse')">🖱️ Mouse Trackpad</button>
+  </div>
+
+  <!-- Top Navigation with Power Button -->
+  <div class="top-row">
+    <button class="btn-sm btn-power" onclick="send('power')">⏻ Power</button>
+    <button class="btn-sm" onclick="send('back')">◄ Back</button>
+    <button class="btn-sm" onclick="send('home')">🏠 Home</button>
+    <button class="btn-sm" onclick="send('mute')">🔇 Mute</button>
+  </div>
+
+  <!-- D-Pad View -->
+  <div class="dpad-wrapper" id="dpadView">
+    <button class="dpad-btn dpad-up" onclick="send('up')">▲</button>
+    <button class="dpad-btn dpad-left" onclick="send('left')">◀</button>
+    <button class="dpad-center" onclick="send('enter')">OK</button>
+    <button class="dpad-btn dpad-right" onclick="send('right')">▶</button>
+    <button class="dpad-btn dpad-down" onclick="send('down')">▼</button>
+  </div>
+
+  <!-- Trackpad View -->
+  <div class="trackpad-wrapper" id="mouseView">
+    <div class="sensitivity-bar">
+      <span class="sens-label">Speed:</span>
+      <button class="sens-btn" onclick="setSensitivity(0.6, this)">🎯 Fine</button>
+      <button class="sens-btn active" onclick="setSensitivity(1.0, this)">⚡ Normal</button>
+      <button class="sens-btn" onclick="setSensitivity(1.6, this)">🚀 Fast</button>
+    </div>
+    <div class="trackpad" id="trackpad">
+      <div class="trackpad-hint">
+        Smooth Precision Trackpad
+        <span>Slide to move · Tap: Left Click · 2 Fingers: Right Click</span>
+      </div>
+    </div>
+    <div class="mouse-btn-row">
+      <button class="mouse-btn" onclick="mouseClick('left')">🖱️ Left Click</button>
+      <button class="mouse-btn" onclick="mouseClick('right')">Right Click</button>
+    </div>
+    <div class="mouse-nudge-row">
+      <span class="nudge-title">Micro Nudge:</span>
+      <button class="nudge-btn" onclick="nudge(0, -18)">▲</button>
+      <button class="nudge-btn" onclick="nudge(-18, 0)">◀</button>
+      <button class="nudge-btn" onclick="nudge(18, 0)">▶</button>
+      <button class="nudge-btn" onclick="nudge(0, 18)">▼</button>
+    </div>
+  </div>
+
+  <!-- Volume Controls -->
+  <div class="action-row">
+    <button class="action-btn" onclick="send('voldn')">
+      🔉 -
+      <span>Vol Down</span>
+    </button>
+    <button class="action-btn" onclick="send('playpause')">
+      ⏯
+      <span>Play/Pause</span>
+    </button>
+    <button class="action-btn" onclick="send('volup')">
+      🔊 +
+      <span>Vol Up</span>
+    </button>
+  </div>
+
+  <!-- Task & Recents Management -->
+  <div class="task-row">
+    <button class="task-btn recents-btn" onclick="send('recents')">
+      🗂️ Recent Apps
+      <span>Show Open Apps</span>
+    </button>
+    <button class="task-btn clear-btn" onclick="send('close_all')">
+      🧹 Close All Apps
+      <span>Free RAM / Boost</span>
+    </button>
+  </div>
+
+  <!-- Quick App Launchers -->
+  <div class="apps-row">
+    <button class="app-btn" onclick="launch('stremio')">Stremio</button>
+    <button class="app-btn" onclick="launch('vlc')">VLC</button>
+    <button class="app-btn" onclick="launch('tvbro')">TV Bro</button>
+    <button class="app-btn" onclick="launch('youtube')">YouTube</button>
+  </div>
+
+  <!-- Direct Typing Box -->
+  <div class="text-box">
+    <input type="text" id="tvText" placeholder="Type text to send to TV...">
+    <button onclick="sendText()">Send</button>
+  </div>
+</div>
+
+<div class="footer" id="hostFooter">
+  Direct 24/7 TV Server · Port 8080
+</div>
+
+<script>
+// Dynamic host detection
+if (window.location.host) {
+  document.getElementById('hostFooter').innerText = 'Direct 24/7 TV Server · http://' + window.location.host;
+}
+
+function switchMode(mode) {
+  if (navigator.vibrate) navigator.vibrate(15);
+  const dpadView = document.getElementById('dpadView');
+  const mouseView = document.getElementById('mouseView');
+  const tabDpad = document.getElementById('tabDpad');
+  const tabMouse = document.getElementById('tabMouse');
+
+  if (mode === 'dpad') {
+    dpadView.style.display = 'flex';
+    mouseView.style.display = 'none';
+    tabDpad.classList.add('active');
+    tabMouse.classList.remove('active');
+  } else {
+    dpadView.style.display = 'none';
+    mouseView.style.display = 'flex';
+    tabDpad.classList.remove('active');
+    tabMouse.classList.add('active');
+  }
+}
+
+function send(code) {
+  if (navigator.vibrate) navigator.vibrate(20);
+  fetch('/cgi-bin/key.cgi?code=' + encodeURIComponent(code));
+}
+
+function launch(app) {
+  if (navigator.vibrate) navigator.vibrate(30);
+  fetch('/cgi-bin/key.cgi?app=' + encodeURIComponent(app));
+}
+
+function mouseClick(type) {
+  if (navigator.vibrate) navigator.vibrate(25);
+  fetch('/cgi-bin/key.cgi?mouse=' + encodeURIComponent(type));
+}
+
+function sendText() {
+  const input = document.getElementById('tvText');
+  const val = input.value;
+  if (!val) return;
+  fetch('/cgi-bin/key.cgi?text=' + encodeURIComponent(val));
+  input.value = '';
+}
+
+document.getElementById('tvText').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') sendText();
+});
+
+// Precision Trackpad Implementation
+let sensMultiplier = 1.0;
+function setSensitivity(factor, btn) {
+  sensMultiplier = factor;
+  document.querySelectorAll('.sens-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (navigator.vibrate) navigator.vibrate(15);
+}
+
+function nudge(dx, dy) {
+  if (navigator.vibrate) navigator.vibrate(10);
+  fetch('/cgi-bin/key.cgi?mouse=move&dx=' + dx + '&dy=' + dy);
+}
+
+const trackpad = document.getElementById('trackpad');
+let lastX = 0, lastY = 0;
+let isTouching = false;
+let touchStartTime = 0;
+let movedDistance = 0;
+let pendingDx = 0, pendingDy = 0;
+let inFlight = false;
+
+function flushDelta() {
+  if (inFlight || (pendingDx === 0 && pendingDy === 0)) return;
+  const sendX = pendingDx;
+  const sendY = pendingDy;
+  pendingDx = 0;
+  pendingDy = 0;
+  inFlight = true;
+  fetch('/cgi-bin/key.cgi?mouse=move&dx=' + sendX + '&dy=' + sendY)
+    .finally(() => {
+      inFlight = false;
+      if (pendingDx !== 0 || pendingDy !== 0) {
+        requestAnimationFrame(flushDelta);
+      }
+    });
+}
+
+trackpad.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) {
+    isTouching = true;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+    movedDistance = 0;
+  } else if (e.touches.length === 2) {
+    mouseClick('right');
+    isTouching = false;
+  }
+}, { passive: true });
+
+trackpad.addEventListener('touchmove', (e) => {
+  if (!isTouching || e.touches.length !== 1) return;
+  const currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
+  const rawDx = (currentX - lastX) * sensMultiplier;
+  const rawDy = (currentY - lastY) * sensMultiplier;
+  lastX = currentX;
+  lastY = currentY;
+
+  const stepDist = Math.hypot(rawDx, rawDy);
+  movedDistance += stepDist;
+
+  let accel = 1.0;
+  if (stepDist < 3) accel = 0.85;
+  else if (stepDist > 15) accel = 1.45;
+
+  const dx = Math.round(rawDx * accel);
+  const dy = Math.round(rawDy * accel);
+
+  if (dx !== 0 || dy !== 0) {
+    pendingDx += dx;
+    pendingDy += dy;
+    flushDelta();
+  }
+}, { passive: true });
+
+trackpad.addEventListener('touchend', () => {
+  if (isTouching) {
+    const elapsed = Date.now() - touchStartTime;
+    if (elapsed < 250 && movedDistance < 10) {
+      mouseClick('left');
+    }
+  }
+  isTouching = false;
+});
+</script>
+</body>
+</html>
