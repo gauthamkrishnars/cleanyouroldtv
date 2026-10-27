@@ -18,8 +18,8 @@ This document explains why **CleanYourOldTV** is engineered to be 100% safe, how
 
 ---
 
-### Guardrail 3: NEVER Disable the Stock Launcher on CVTE Motherboards
-* **The Danger**: On millions of budget TVs (Lloyd, Thomson, Kodak, Vu, etc.), the TV uses a motherboard manufactured by **CVTE** (running custom software such as `cn.zeasn.launcher.vstoresubclient.cvte` or `com.cvte.tv.launcher.space`). 
+### Guardrail 3: NEVER Disable the Stock Launcher on Budget / CVTE Motherboards
+* **The Danger**: On millions of budget TVs (Lloyd, Thomson, Kodak, Vu, etc.), the TV uses a universal smart TV motherboard manufactured by **CVTE** (running custom software such as `cn.zeasn.launcher.vstoresubclient.cvte` or `com.cvte.tv.launcher.space`). 
   The TV's physical remote has a "Home" or "Source" button wired directly to toggle between Smart TV mode and the Cable/Antenna/HDMI tuner hardware. Disabling the stock launcher or setting a third-party launcher as default breaks physical input switching and confuses family members.
 * **Our Protection**: We keep the stock launcher intact and instead set all animation scales to `0.0x`. This makes the stock interface open instantly with zero lag while preserving full compatibility with the physical remote and cable tuner.
 

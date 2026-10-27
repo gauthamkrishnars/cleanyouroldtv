@@ -9,40 +9,57 @@ This guide ensures anyone—regardless of what TV model, brand, or operating sys
 The automated script (`RUN_OPTIMIZER.bat` or `run_optimizer.sh`) supports **any television running Android TV, Google TV, or Fire OS**. 
 
 ### Tested & Supported Brands:
-* **Budget & CVTE Boards**: Lloyd, Thomson, Kodak, Vu, Blaupunkt, MarQ, Coocaa, Daiwa, Shinco, BPL.
+* **Budget & Value Brands**: Lloyd, Thomson, Kodak, Vu, Blaupunkt, MarQ, Coocaa, Daiwa, Shinco, BPL, Sansui, Micromax, Intex.
 * **Mainstream Android TVs**: Xiaomi (Mi TV / Redmi TV), TCL, Realme, OnePlus, Hisense, Motorola, Nokia, Sharp, Toshiba.
 * **Premium Android TVs**: Sony Bravia, Philips (Android TV series).
 * **Streaming Sticks & Boxes**: Amazon Fire TV Stick / Fire TV 4K / Cube, Chromecast with Google TV, Xiaomi Mi Box / TV Stick, Onn 4K Streaming Box, Nvidia Shield TV.
 
 ---
 
-### How to Turn on Developer Options & ADB Debugging
+### What is a "CVTE" Board? (Plain English Explanation)
+Many popular budget smart TV brands don't design their internal computer hardware from scratch. Instead, they use pre-built smart TV motherboards manufactured by an electronics company called **CVTE**. 
 
-Follow the specific steps below for your brand to unlock network control:
+These motherboards run a specialized version of Android where:
+1. **The physical remote's Home and Source buttons** are hardcoded into the TV's stock software to quickly switch to Cable/DTH/Set-top boxes.
+2. **Network Debugging is often already enabled from the factory!** That's why you can frequently connect to them over Wi-Fi right away without needing to unlock secret developer menus!
 
-#### A. Standard Android TV / Google TV (Sony, TCL, Xiaomi, Realme, OnePlus)
-1. Turn on your TV and open **Settings** (gear icon on the top right).
-2. Go to **Device Preferences** (or **System**) $\rightarrow$ **About**.
-3. Scroll down to **Android TV OS Build** (or **Build Number**).
-4. Tap the **OK** button on your remote **7 times rapidly** until a popup says: *"You are now a developer!"*
-5. Press Back $\rightarrow$ go to **Developer Options**.
-6. Turn **ON**:
+---
+
+### How to Connect to Your TV: 4 Different Methods
+
+Follow these methods in order:
+
+#### Method 0: Just Connect Right Away! (Most Budget TVs)
+Before doing anything complicated:
+1. Turn on your TV and check its IP address in **Settings $\rightarrow$ Network** (e.g. `192.168.1.50`).
+2. Run `RUN_OPTIMIZER.bat` and type that IP address.
+3. On millions of budget TVs (especially Lloyd, Thomson, Kodak, and Vu), **Network ADB is already enabled out of the factory**. It will connect immediately!
+
+#### Method 1: The Standard "7 Clicks" Method (Google TV, Sony, Mi, TCL, Realme, OnePlus)
+If the direct connection doesn't work right away:
+1. Open TV **Settings** $\rightarrow$ **Device Preferences** (or **System**) $\rightarrow$ **About**.
+2. Scroll down to **Android TV OS Build** (or **Build Number**).
+3. Tap the **OK button on your remote 7 times rapidly** until a popup says: *"You are now a developer!"*
+4. Press Back $\rightarrow$ go to **Developer Options**.
+5. Turn **ON**:
    * **USB Debugging**
    * **Network Debugging** (if present)
-7. Note down your TV's IP address from **Settings $\rightarrow$ Network & Internet $\rightarrow$ Connected Wi-Fi/Ethernet**.
 
-#### B. Budget TVs & CVTE Boards (Lloyd, Vu, Thomson, Kodak)
-1. Go to **TV Settings** $\rightarrow$ **System Info** (or **About TV**).
-2. Highlight **Build Version** or **Firmware Version** and press **OK 7 times**.
-3. In Developer Options, enable **USB Debugging**.
-4. Check your IP address under **Network Settings**.
+#### Method 2: Secret Remote Codes (If 7 clicks does not do anything on your TV)
+On some budget smart TVs, clicking the build number does nothing because the factory locked the standard menu behind an engineering remote code:
+1. Press the **`Menu`** (or **`Source`** / **`Input`**) button on your physical remote.
+2. While the menu is on screen, quickly type one of these number sequences:
+   * **`1 1 4 7`** (Most common for budget CVTE boards)
+   * **`2 5 8 0`**
+   * **`8 1 5`**
+3. A secret *Factory / Engineering Menu* will appear on screen.
+4. Navigate to **General Settings** or **Other Settings** and toggle **ADB / Debugging** to **ON**.
 
-#### C. Amazon Fire TV (Fire OS)
+#### Method 3: Amazon Fire TV (Fire OS)
 1. Go to **Settings** $\rightarrow$ **My Fire TV** $\rightarrow$ **About**.
 2. Click on the device name (e.g. *Fire TV Stick 4K*) **7 times** to unlock Developer Options.
 3. Press Back, open **Developer Options**.
 4. Set **ADB Debugging** to **ON**.
-5. Go to **Network** to note your IP address.
 
 ---
 

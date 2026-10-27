@@ -42,7 +42,7 @@ if [ -n "$EXISTING_DEV" ]; then
 fi
 
 if [ -z "$EXISTING_DEV" ]; then
-    read -p "Enter your TV's local IP address (e.g. 192.168.1.4): " TV_IP
+    read -p "Enter your TV's local IP address (e.g. 192.168.1.50): " TV_IP
     if [ -z "$TV_IP" ]; then
         echo -e "${RED}[!] IP address cannot be empty.${NC}"
         exit 1

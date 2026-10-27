@@ -46,7 +46,7 @@ if defined EXISTING_DEV (
 :PROMPT_IP
 echo.
 echo Please enter your TV's local IP address (Found in TV Settings - Network):
-set /p "TV_IP=Enter TV IP (e.g. 192.168.1.4): "
+set /p "TV_IP=Enter TV IP (e.g. 192.168.1.50): "
 if "%TV_IP%"=="" (
     echo [!] IP address cannot be empty.
     goto :PROMPT_IP
