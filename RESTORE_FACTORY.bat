@@ -13,6 +13,9 @@ echo  * Stops and removes the TV remote daemon
 echo ===============================================================================
 echo.
 
+if exist "adb.exe" set "PATH=%CD%;%PATH%"
+if exist "bin\adb.exe" set "PATH=%CD%\bin;%PATH%"
+
 :: Detect or Prompt for TV IP
 echo [*] Checking for connected devices...
 for /f "tokens=1,2" %%A in ('adb devices ^| findstr /r "[0-9]\:[0-9]"') do (

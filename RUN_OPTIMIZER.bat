@@ -22,9 +22,12 @@ echo  [ ] Any VPN on this computer (NordVPN, ExpressVPN, Cloudflare Warp) is TUR
 echo.
 
 :: 2. Check for ADB
+if exist "adb.exe" set "PATH=%CD%;%PATH%"
+if exist "bin\adb.exe" set "PATH=%CD%\bin;%PATH%"
+
 where adb >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [X] ADB is not found in your system PATH.
+    echo [X] ADB is not found in your system PATH or folder.
     echo.
     echo     EASY FIX (Choose one):
     echo     Option A: Download Google Platform-Tools (contains adb.exe):

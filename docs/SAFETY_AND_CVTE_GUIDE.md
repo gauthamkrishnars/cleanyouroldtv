@@ -1,10 +1,10 @@
-# Safety Guide & Architectural Guardrails
+# Safety Guide and Hardware Guardrails
 
-This document explains why **CleanYourOldTV** is engineered to be 100% safe, how it prevents the bricking hazards found in generic debloat scripts, and the low-level lessons learned from CVTE / MediaTek / Nougat hardware.
+This document details the safety rules implemented in **CleanYourOldTV** to avoid device bricking, bootloops, and broken tuner controls observed with generic debloat scripts on budget hardware.
 
 ---
 
-## The 4 Golden Safety Guardrails
+## Core Safety Rules
 
 ### Guardrail 1: NEVER Remount `/system` Read-Write
 * **The Danger**: Budget smart TVs (especially MediaTek MT5863 / MT5867 / MT5862) enforce **dm-verity** kernel integrity checks on boot. If any script remounts `/system` as read-write (`mount -o remount,rw /system`) and modifies, deletes, or replaces system files, dm-verity trips upon reboot. The TV will permanently bootloop at the bootloader stage, requiring factory JTAG/eMMC flashing tools.

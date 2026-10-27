@@ -1,46 +1,44 @@
 # CleanYourOldTV ⚡📺
 
-> **Resurrect any sluggish budget Smart TV over Wi-Fi in 60 seconds.**  
-> Instant Menu Response · Safe Background Debloat · 24/7 Phone Remote with Touchpad · Free Unlimited Streaming (Movies, Anime, Series) · 100% Risk-Free.
+> Speed up budget Android TVs (1GB RAM or less) over local Wi-Fi in under a minute.  
+> Instant UI response, safe user-space debloat, on-device web remote with trackpad, and hardware-buffered media playback.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Android TV](https://img.shields.io/badge/Supported-Android%20TV%20%7C%20Google%20TV%20%7C%20Fire%20OS-brightgreen.svg)](#supported-tvs)
-[![Safety: 100% Verified](https://img.shields.io/badge/Safety-100%25%20Brick--Proof-success.svg)](docs/SAFETY_AND_CVTE_GUIDE.md)
+[![Safety: 100% Verified](https://img.shields.io/badge/Safety-Brick--Proof-success.svg)](docs/SAFETY_AND_CVTE_GUIDE.md)
 
 ---
 
-## 🛑 The Problem with Budget & Older Smart TVs
+## Overview
 
-Millions of budget smart TVs (such as **Lloyd, Xiaomi/Mi, TCL, Realme, OnePlus, Thomson, Vu, Kodak, Blaupunkt, Daiwa, Hisense, and generic Android TVs**) ship with **only 1 GB or less of RAM**.
+Budget smart TVs from brands like Lloyd, Xiaomi, TCL, Realme, OnePlus, Thomson, Vu, Kodak, Blaupunkt, and Daiwa typically ship with 1 GB or less of physical RAM.
 
-After a year or two of updates and usage, they slow down to a crawl:
-* 🐢 **Agonizing UI Lag**: Pressing buttons on the remote takes seconds to respond because slow fade animations choke the TV processor.
-* ⌨️ **Typing Torture**: Searching on YouTube or typing Wi-Fi passwords with a sluggish plastic remote is agonizing.
-* 💸 **Paid Subscriptions & Ad Overload**: Juggling multiple monthly streaming subscriptions with bloated, laggy apps that choke your TV's storage.
-* 💥 **App Freezes & Decoder Crashes**: When streaming apps attempt high-bitrate or 4K video, older TV chips overheat or crash to a black screen.
-* ⚠️ **Generic Guides Break Cable TV**: Many online tutorials tell you to replace the launcher or delete system packages—which breaks your physical remote's Cable TV tuner button or traps your TV in an infinite bootloop!
+Over time, background telemetry and default OS animation transitions cause noticeable interface lag:
+* Remote button presses take several seconds to register.
+* Typing search queries and credentials using an infrared remote is slow and prone to errors.
+* Video streams at higher resolutions cause memory starvation or decoder crashes on older MediaTek and Amlogic chipsets.
+* Standard debloat scripts often disable system launchers or core services, breaking physical Cable TV tuner controls or causing boot hangs.
 
-**CleanYourOldTV** fixes all of this with **no cables, no root, zero risk, and a 1-click restore**.
+CleanYourOldTV addresses these issues directly over local Wi-Fi. It requires no root privileges, removes no system files, and includes an automated restore script.
 
 ---
 
-## ✨ What This Toolkit Does For Your TV
+## Feature Comparison
 
-| What Annoyed You | What CleanYourOldTV Fixes |
+| Problem | CleanYourOldTV Solution |
 | :--- | :--- |
-| **Laggy Home & Settings Menus** | **Instant responsiveness**: Animation delays set to `0.0x` so menus snap open immediately. |
-| **Hidden Factory Telemetry & Bloat** | **Freed RAM**: Freezes background crash-tracking and OEM test shims safely in user-space. |
-| **Lost or Sluggish Plastic Remote** | **24/7 On-TV Web Remote**: Runs directly on the TV in 24 KB RAM with a full laptop touchpad, typing box, and quick-launch buttons. |
-| **Expensive Monthly Subscriptions** | **Free Unlimited Media Stack**: Pre-configures Stremio + Torrentio + Anime Kitsu to stream any Movie, Anime, or Web Series for free! |
-| **No Mouse for Sideloaded Apps** | **Laptop-style Trackpad**: Full touch cursor with micro-nudge arrows for precision aiming. |
-| **Slow On-Screen Typing** | **Direct Phone Typing**: Type passwords, movie titles, and links straight from your phone's keyboard. |
-| **Family Cable TV Compatibility** | **100% Intact**: Keeps your factory TV launcher untouched so Cable TV and physical remote buttons never break. |
-| **Video Playback Stuttering** | **Hardware Buffer Optimization**: Pre-configures video caching so movies play smoothly without buffering. |
-| **Peace of Mind** | **1-Click Rollback**: Run `RESTORE_FACTORY.bat` at any time to return 100% back to factory default in 5 seconds. |
+| **Menu Transition Delays** | Global window and transition animation scales are set to `0.0x` for instant navigation. |
+| **Background Memory Usage** | Unused OEM test packages, print spoolers, and crash telemetry are safely frozen in user space. |
+| **Physical Remote Limitations** | A lightweight web server runs directly on the TV (24 KB RAM usage), accessible via phone browser. |
+| **App Navigation Without Mouse** | The web remote provides a precision trackpad with acceleration and micro-nudge directional controls. |
+| **On-Screen Keyboard Entry** | Text can be typed on a phone keyboard and sent directly to the TV input field. |
+| **Free Media Streaming** | Configures Stremio with Torrentio and Anime Kitsu addons, routed through VLC hardware buffering. |
+| **Cable TV and Tuner Inputs** | The factory launcher is left completely intact, preserving tuner switching on physical remotes. |
+| **Safe Rollback** | `RESTORE_FACTORY.bat` re-enables all disabled packages and restores default animation scales. |
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <p align="center">
   <img src="assets/stock_current.png" width="48%" alt="Stock TV Home Screen (Cable Tuner Preserved)" />
@@ -49,74 +47,61 @@ After a year or two of updates and usage, they slow down to a crawl:
 
 ---
 
-## ⚠️ Crucial Checklist Before You Start (Don't Skip!)
+## Pre-Flight Checklist
 
-To make sure your connection works on the first try without any issues, check these 4 points:
+Before running the setup script, verify the following:
 
-1. 📶 **Same Wi-Fi / Router**: Your computer (or phone) and your TV **MUST be connected to the exact same Wi-Fi network or router**.
-   * *Watch out*: If your computer is on a "Guest Wi-Fi" or mobile hotspot, devices cannot talk to each other. Connect both to your main home Wi-Fi!
-2. 🛡️ **Turn OFF Any VPN**: If you have a VPN running on your computer or phone (like NordVPN, ExpressVPN, Surfshark, or Cloudflare 1.1.1.1 WARP), **turn it OFF temporarily**. VPNs block local network communication.
-3. 📺 **Keep TV Awake**: Make sure your TV screen is turned **ON** and showing the home screen (not asleep or in standby mode).
-4. 🔑 **Look at Your TV Screen for the Permission Popup**:
-   * The first time you connect, a dialog will appear on your TV screen:  
-     `"Allow USB debugging? The computer's RSA key fingerprint is: ..."`
-   * **You MUST use your physical TV remote to check `[X] Always allow from this computer` and click `OK`!**
-
----
-
-## 🚀 Quickstart: 3 Simple Steps
-
-### Step 1: Find Your TV's IP & Enable Debugging
-
-#### Where to Find Your TV's IP Address:
-* **Android TV / Google TV**: Open TV **Settings** $\rightarrow$ **Network & Internet** $\rightarrow$ Click on your **Connected Wi-Fi** $\rightarrow$ Scroll down to **IP Address** (e.g. `192.168.1.50`).
-* **Fire TV**: Open **Settings** $\rightarrow$ **My Fire TV** $\rightarrow$ **About** $\rightarrow$ **Network** $\rightarrow$ **IP Address**.
-* **Router Admin Page**: Open your browser at `192.168.1.1` and look at connected devices.
+1. **Same Local Network**: Both your computer (or phone) and the TV must be connected to the same Wi-Fi router or Ethernet switch. Do not use Guest Wi-Fi, as client isolation prevents devices from communicating.
+2. **Disable VPN**: Turn off any active VPN (NordVPN, ExpressVPN, Surfshark, Cloudflare WARP) on your computer or phone. VPN tunnels prevent local subnet discovery.
+3. **Power State**: The TV screen must be powered on and showing the home menu.
+4. **Authorization Dialog**: When connecting for the first time, your TV will display an authorization prompt:
+   ```text
+   Allow USB debugging?
+   The computer's RSA key fingerprint is: ...
+   ```
+   Check the box for **Always allow from this computer** using your physical TV remote and click **OK**.
 
 ---
 
-#### How to Enable Network Debugging (Choose the method that matches your TV):
+## Quickstart
 
-* **Method 0: Just Try Connecting Right Away! (Most Budget TVs)**  
-  On millions of budget smart TVs (Lloyd, Thomson, Kodak, Vu, Daiwa, Blaupunkt), **Network Debugging is already enabled by default from the factory**. Try running the script directly with your TV's IP! If it connects, you don't have to touch any developer menus.
+### Step 1: Locate TV IP Address and Enable Debugging
 
-* **Method 1: Standard "7 Clicks" Method (Google TV, Sony, Mi, TCL, Realme, OnePlus)**  
-  1. Open TV **Settings** $\rightarrow$ **Device Preferences** (or **System**) $\rightarrow$ **About**.  
-  2. Find **Android TV OS Build** (or **Build Number**).  
-  3. Press the **OK button on your TV remote 7 times rapidly** until a message says: *"You are now a developer!"*  
-  4. Press Back $\rightarrow$ Open **Developer Options** $\rightarrow$ Turn **ON** `USB Debugging` and `Network Debugging`.
+#### Finding the IP Address
+* **Android TV / Google TV**: Open Settings -> Network & Internet -> Select your connected Wi-Fi -> IP Address (e.g. `192.168.1.50`).
+* **Fire TV**: Open Settings -> My Fire TV -> About -> Network -> IP Address.
+* **Router Interface**: Check the DHCP client list in your router settings at `192.168.1.1`.
 
-* **Method 2: Secret Remote Codes (If 7 clicks does nothing on your TV)**  
-  Some older budget TV remotes lock developer settings behind an engineering code:  
-  * Press **`Menu`** (or `Source` / `Input`) on your TV remote, then quickly press:  
-    **`1 1 4 7`** (Most common) or **`2 5 8 0`** or **`8 1 5`**.  
-  * In the secret menu that appears, go to *General Settings* and toggle **ADB Debugging ON**.
+#### Enabling Debugging on Your TV
+* **Method 0: Test Direct Connection (Many Budget TVs)**:  
+  Many budget TVs ship with network debugging enabled on port 5555 out of the box. Try entering your IP directly in the script.
+* **Method 1: Standard Developer Mode (Google TV, Sony, Mi, TCL, Realme, OnePlus)**:  
+  Open Settings -> About -> Scroll down to Build Number -> Press OK 7 times -> Go to Settings -> Developer Options -> Enable USB Debugging.
+* **Method 2: Factory Remote Codes (Older Budget TVs)**:  
+  If pressing OK 7 times does not open Developer Options, press Menu on your remote and enter `1147`, `2580`, or `815`. Locate General Settings and enable ADB.
 
-*(Have an **LG webOS** or **Samsung Tizen** TV? See our [Non-Android TV Guide](docs/BRANDS_AND_PLATFORMS.md) for speedup and debloat steps!).*
+For LG webOS or Samsung Tizen instructions, refer to the [Platform Guide](docs/BRANDS_AND_PLATFORMS.md).
 
 ---
 
-### Step 2: Run the 1-Click Script
+### Step 2: Run the Optimization Script
 
-#### 🪟 On Windows (Easiest)
-1. Download this repository ([Click here to download ZIP](https://github.com/gauthamkrishnars/cleanyouroldtv/archive/refs/heads/main.zip)) and extract it.
-2. Double-click **`RUN_OPTIMIZER.bat`**.
-3. Type your TV's IP address (e.g. `192.168.1.50`) when prompted, or let it auto-detect.
-4. **Look at your TV screen**: If prompted with *"Allow USB debugging?"*, check `Always allow` and click `OK` with your TV remote.
-5. **Hands off!** The script automatically creates a package backup, sets instant animations, freezes background telemetry, and launches your phone remote.
+#### Windows
+1. Download the [Repository ZIP](https://github.com/gauthamkrishnars/cleanyouroldtv/archive/refs/heads/main.zip) and extract it.
+2. If ADB is not installed on your system, install it via winget (`winget install Google.PlatformTools`) or download Google Platform-Tools and place `adb.exe` in this folder.
+3. Double-click `RUN_OPTIMIZER.bat`.
+4. Enter the TV IP address when prompted (or accept auto-detected device).
+5. Confirm the USB debugging prompt on your TV screen if it appears.
 
-#### 🍏 On macOS / 🐧 Linux
-Open terminal in the folder and run:
+#### macOS and Linux
 ```bash
 chmod +x run_optimizer.sh
 ./run_optimizer.sh
 ```
 
-#### 📱 100% Phone-Only (No PC or Laptop Needed!)
-If you don't own a computer, you can run this entire optimization directly from an Android smartphone over Wi-Fi:
-1. Connect your phone to your home Wi-Fi.
-2. Install the free **Termux** app (from F-Droid or GitHub) or **Bugjaeger Mobile ADB** from Google Play.
-3. In Termux, run:
+#### Android Phone (Without a Computer)
+1. Install **Termux** from F-Droid or GitHub.
+2. Run the following commands:
    ```bash
    pkg install android-tools git
    git clone https://github.com/gauthamkrishnars/cleanyouroldtv.git
@@ -127,104 +112,87 @@ If you don't own a computer, you can run this entire optimization directly from 
 
 ---
 
-### Step 3: Open Your 24/7 Phone Remote!
+### Step 3: Connect to the Web Remote
 
-Once the script finishes, open your smartphone browser on your home Wi-Fi and visit:
+Once optimization finishes, open a browser on any phone connected to the same Wi-Fi and navigate to:
 
 ```text
 http://<YOUR-TV-IP>:8080
 ```
-*(Example: `http://192.168.1.50:8080` — replace with your TV's actual IP address)*
+Example: `http://192.168.1.50:8080` (use your TV's actual IP address).
 
-> 📱 **Add to Phone Home Screen**: In Safari (iOS) or Chrome (Android) on your phone, tap **Share / Settings $\rightarrow$ Add to Home Screen**. It installs as a full-screen native app with an icon for instant, full-screen remote control anytime!
+To install it as an app on your phone, open your browser options and select **Add to Home Screen**.
 
 ---
 
-## 🕹️ Standalone 24/7 On-TV Web Remote
+## Technical Details
 
-Unlike other remote apps that force you to keep a computer running or install ad-heavy apps from the Play Store, this remote **lives 100% inside your TV**:
+### On-Device Web Server Architecture
+
+The web remote runs directly on the television without requiring a host computer:
 
 ```text
-[ TV Powers On at Wall Socket ]
-               │
-               ▼
-      [ TVRemoteBoot.apk ]     <-- 8 KB receiver catches power-on broadcast
-               │                   Starts micro-daemon via root socket, then exits
-               ▼
-       [ BusyBox httpd ]       <-- Built-in micro web server (Only 24 KB RAM!)
-               │
-               ▼
-          [ key.cgi ]          <-- Injects events straight to hardware input kernel
-               │
-        [ Phone Web UI ]       <-- Served directly to any smartphone browser on Wi-Fi
+[ TV Cold Boot ]
+       │
+       ▼
+ [ TVRemoteBoot.apk ]    (8 KB background receiver catches BOOT_COMPLETED)
+       │                 (Starts local daemon, then terminates process)
+       ▼
+[ BusyBox httpd:8080 ]  (Micro web server consuming ~24 KB RAM)
+       │
+       ▼
+  [ key.cgi ]           (Dispatches Linux input events to /dev/input/event2)
+       │
+[ Mobile Web Client ]   (Touchpad, D-pad, keyboard, and task management)
 ```
 
-### Remote Highlights:
-* **D-Pad & Trackpad Modes**: Seamless toggle between traditional TV D-Pad buttons and a smooth laptop-style mouse trackpad.
-* **Sensitivity Controls**: Toggle between **Fine**, **Normal**, and **Fast** pointer speeds.
-* **Micro-Nudge Precision**: Arrow buttons (`▲`, `◀`, `▶`, `▼`) for pixel-perfect clicking on small buttons.
-* **Instant Phone Keyboard**: Type searches, movie names, and long passwords from your phone keyboard instead of clicking one letter at a time on screen.
-* **🧹 Close All Apps / Purge RAM**: Single button that terminates background applications and cleans cached memory (`drop_caches`), giving you maximum free RAM before playing games or launching heavy apps.
+* **Memory Footprint**: The BusyBox HTTP service uses approximately 24 KB of memory, leaving the remaining RAM available for media applications.
+* **Kernel Event Dispatch**: Button and pointer actions call `/cgi-bin/key.cgi`, writing input codes directly to Linux event nodes for minimal latency.
+* **RAM Cleanup**: The web interface includes a button to trigger `drop_caches` and terminate background processes before launching heavy media tasks.
 
 ---
 
-## 🍿 Free Unlimited Streaming Stack: Movies, Anime & Web Series
+## Free Streaming Stack (Stremio and VLC)
 
-Turn your budget TV into a powerhouse streaming machine with **zero monthly fees**, zero pop-up ads, and a clean Netflix-style interface:
+For smooth media playback on low-memory chipsets:
 
-```text
-[ Stremio TV Interface ]
-           │
-           ├── Torrentio Addon    <-- Pulls high-speed 1080p streams from across the web
-           ├── Anime Kitsu Addon  <-- Complete anime catalog with episodes & metadata
-           │
-           ▼
-[ Native Hardware VLC Player ]    <-- 3,000 ms network cache buffer cushion
-           │
-     Zero Stutter · 1080p Crisp · Instant Seeking · No Black Screen Crashes!
-```
-
-### What You Get:
-* 🎬 **All Movies & Web Series**: Browse trending movies, new releases, and complete TV series in high definition with a modern catalog interface.
-* ⛩️ **Complete Anime Library**: Watch every anime season with Japanese audio, English subtitles, and synchronized episodes via the **Anime Kitsu** addon.
-* ⚡ **1-Tap Remote Quick Launcher**: Tap the **Stremio** or **VLC** button directly on your phone's web remote to launch your streams instantly!
-
-### Hardware Setup for Budget TVs (Prevents Stutter & Freezes):
-Older smart TV chips (like MediaTek MT5863) physically lack 4K decoders. High-bitrate 4K files cause black screens or memory crashes. We configure the perfect hardware-safe balance:
-
-1. **Stremio for Android TV** (`com.stremio.one`):
-   * Install the Android TV version (`com.stremio.one`).
-   * In **Settings $\rightarrow$ Streaming**:
-     * **Exclude Qualities**: Add `4k,cam,scr` to filter out unsupported high-bitrate files.
-     * **Torrent Profile**: Set to **Fast** for rapid peer discovery.
-     * **Default Player**: Set to **External Player** (routes video to VLC).
-2. **VLC for Android** (`org.videolan.vlc`):
-   * Install the native VLC media player (`org.videolan.vlc`).
-   * In **Settings $\rightarrow$ Advanced $\rightarrow$ Network Caching Value**, set it to **`3,000 ms`**.
-   * **Why this matters**: Stremio's built-in player uses heavy webview overlays that eat RAM on 1GB TVs. VLC is a native C++ player that uses direct hardware video decoders. With a 3-second buffer cushion, you get **zero stutter, instant pause/resume, and zero freezing**!
+1. **Install Stremio and VLC**:
+   * Install the official Android TV build of **Stremio** (`com.stremio.one`) from the Play Store or official website.
+   * Install **VLC for Android** (`org.videolan.vlc`).
+2. **Automatic Addon Configuration**:
+   * Log into Stremio on your TV once with a free account.
+   * Run `RUN_OPTIMIZER.bat` or tap **Free Media** on your mobile web remote.
+   * The script dispatches deep-link intents to register the **Torrentio** and **Anime Kitsu** addon manifests automatically.
+3. **Hardware Playback Settings**:
+   * In Stremio Settings -> Streaming, exclude `4k` streams. Older decoders like the MediaTek MT5863 cannot process 4K HEVC streams smoothly.
+   * Set Default Player to **External Player** (VLC).
+   * In VLC Settings -> Advanced, set **Network Caching Value** to `3,000 ms`. This ensures smooth playback and eliminates buffering drops.
 
 ---
 
-## 🛡️ Strict Safety Guarantee & 1-Click Rollback
+## Rollback Instructions
 
-* **No Bricking Hazard**: Operates strictly in user-space (`/data`). System partitions are never remounted.
-* **Google Play Services Preserved**: We never disable `com.google.android.gms` (which causes cold-boot hangs on older Android builds).
-* **Tuner & Remote Safe**: Your stock launcher is kept intact, meaning Cable TV and your physical remote's Source/Home buttons work exactly as they always did.
-* **Safe Freezing**: Uses `pm disable-user --user 0`. No system files are permanently deleted.
+All package modifications use user-space disabling (`pm disable-user --user 0`). No system partitions are modified.
 
-### How to Undo (1-Click Factory Restore)
-Want to return 100% back to factory default?
-* On Windows: Double-click **`RESTORE_FACTORY.bat`**.
-* On Linux/Mac: Run `./restore_factory.sh`.
+To restore factory settings:
+* **Windows**: Double-click `RESTORE_FACTORY.bat`.
+* **macOS / Linux**: Run `./restore_factory.sh`.
 
----
-
-## 📚 Deep Guides & Documentation
-* [Universal Brands & Platforms Guide (Android TV, Fire TV, LG webOS, Samsung Tizen)](docs/BRANDS_AND_PLATFORMS.md)
-* [Safety Architecture & Hardware Lessons](docs/SAFETY_AND_CVTE_GUIDE.md)
-* [Manual Step-by-Step Commands (For Power Users)](docs/MANUAL_COMMANDS.md)
+The restore script:
+1. Re-enables all frozen packages.
+2. Resets animation scales back to `1.0x`.
+3. Terminates the BusyBox HTTP process and removes the `TVRemoteBoot` helper.
 
 ---
 
-## ⚖️ License
-This project is open-source and free under the [MIT License](LICENSE).
+## Documentation
+
+* [Brands and Platforms Guide (Android TV, Fire TV, LG webOS, Samsung Tizen)](docs/BRANDS_AND_PLATFORMS.md)
+* [Safety Architecture and CVTE Motherboard Notes](docs/SAFETY_AND_CVTE_GUIDE.md)
+* [Manual Command Reference](docs/MANUAL_COMMANDS.md)
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
