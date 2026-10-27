@@ -45,11 +45,6 @@ After a year or two of updates and usage, they slow down to a crawl:
   <img src="assets/stremio_live.png" width="48%" alt="Smooth Streaming Setup" />
 </p>
 
-<p align="center">
-  <img src="assets/tv_interface.png" width="48%" alt="Fast Navigation Interface" />
-  <img src="assets/youtube_tv.png" width="48%" alt="Instant YouTube Playback" />
-</p>
-
 ---
 
 ## ⚠️ Crucial Checklist Before You Start (Don't Skip!)
