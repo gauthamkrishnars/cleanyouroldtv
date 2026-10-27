@@ -264,10 +264,46 @@ if "%FLAG_REMOTE%"=="1" (
 :: 3. Free Streaming Setup (Stremio Addons)
 if "%FLAG_STREAM%"=="1" (
     echo.
-    echo [*] Checking Stremio setup...
+    echo [*] Checking media streaming apps (Stremio and VLC)...
+    
+    :: Sideload Stremio if APK exists locally
+    adb -s %TV_TARGET% shell pm path com.stremio.one >nul 2>&1
+    if %errorlevel% neq 0 (
+        set "STREMIO_APK="
+        if exist "Stremio_TV.apk" set "STREMIO_APK=Stremio_TV.apk"
+        if exist "bin\Stremio_TV.apk" set "STREMIO_APK=bin\Stremio_TV.apk"
+        if defined STREMIO_APK (
+            echo     [*] Sideloading Stremio Android TV APK wirelessly over ADB...
+            adb -s %TV_TARGET% install -r "!STREMIO_APK!" >nul 2>&1
+            echo     [OK] Stremio sideloaded successfully!
+        ) else (
+            echo     [i] Stremio is not currently installed on your TV.
+            echo         You can download the official Android TV APK from stremio.com/download
+            echo         and place Stremio_TV.apk in this folder to sideload it automatically.
+        )
+    )
+
+    :: Sideload VLC if APK exists locally
+    adb -s %TV_TARGET% shell pm path org.videolan.vlc >nul 2>&1
+    if %errorlevel% neq 0 (
+        set "VLC_APK="
+        if exist "vlc.apk" set "VLC_APK=vlc.apk"
+        if exist "bin\vlc.apk" set "VLC_APK=bin\vlc.apk"
+        if defined VLC_APK (
+            echo     [*] Sideloading VLC for Android APK wirelessly over ADB...
+            adb -s %TV_TARGET% install -r "!VLC_APK!" >nul 2>&1
+            echo     [OK] VLC sideloaded successfully!
+        ) else (
+            echo     [i] VLC is not currently installed on your TV.
+            echo         You can download the official ARM APK from get.videolan.org/vlc-android
+            echo         and place vlc.apk in this folder to sideload it automatically.
+        )
+    )
+
+    :: Auto-inject addons into Stremio
     adb -s %TV_TARGET% shell pm path com.stremio.one >nul 2>&1
     if %errorlevel% equ 0 (
-        echo     [i] Stremio detected! Injecting Torrentio & Anime Kitsu addons...
+        echo     [*] Auto-injecting Torrentio and Anime Kitsu addons into Stremio...
         adb -s %TV_TARGET% shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" >nul 2>&1
         timeout /t 2 >nul
         adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
@@ -277,11 +313,7 @@ if "%FLAG_STREAM%"=="1" (
         timeout /t 2 >nul
         adb -s %TV_TARGET% shell input keyevent 22 >nul 2>&1
         adb -s %TV_TARGET% shell input keyevent 66 >nul 2>&1
-        echo     [OK] Torrentio & Anime Kitsu successfully injected into Stremio!
-    ) else (
-        echo     [i] Stremio is not currently installed on your TV.
-        echo         Install Stremio from your TV's Play Store or stremio.com.
-        echo         After installing, tap "Free Media" on your Phone Remote to auto-install addons!
+        echo     [OK] Torrentio and Anime Kitsu successfully injected into Stremio!
     )
 )
 

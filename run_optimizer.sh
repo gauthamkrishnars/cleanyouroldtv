@@ -185,8 +185,43 @@ fi
 
 # 3. Free Streaming Setup
 if [ "$DO_STREAM" -eq 1 ]; then
+    echo -e "\n[*] Checking media streaming apps (Stremio and VLC)..."
+
+    # Sideload Stremio if APK exists locally
+    if ! adb -s "$TV_TARGET" shell pm path com.stremio.one &>/dev/null; then
+        STREMIO_APK=""
+        [ -f "$SCRIPT_DIR/Stremio_TV.apk" ] && STREMIO_APK="$SCRIPT_DIR/Stremio_TV.apk"
+        [ -f "$SCRIPT_DIR/bin/Stremio_TV.apk" ] && STREMIO_APK="$SCRIPT_DIR/bin/Stremio_TV.apk"
+        if [ -n "$STREMIO_APK" ]; then
+            echo -e "    [*] Sideloading Stremio Android TV APK wirelessly over ADB..."
+            adb -s "$TV_TARGET" install -r "$STREMIO_APK" &>/dev/null || true
+            echo -e "    ${GREEN}[OK]${NC} Stremio sideloaded successfully!"
+        else
+            echo -e "    [i] Stremio is not currently installed on your TV."
+            echo -e "        Download the official Android TV APK from stremio.com/download"
+            echo -e "        and place Stremio_TV.apk in this folder to sideload automatically."
+        fi
+    fi
+
+    # Sideload VLC if APK exists locally
+    if ! adb -s "$TV_TARGET" shell pm path org.videolan.vlc &>/dev/null; then
+        VLC_APK=""
+        [ -f "$SCRIPT_DIR/vlc.apk" ] && VLC_APK="$SCRIPT_DIR/vlc.apk"
+        [ -f "$SCRIPT_DIR/bin/vlc.apk" ] && VLC_APK="$SCRIPT_DIR/bin/vlc.apk"
+        if [ -n "$VLC_APK" ]; then
+            echo -e "    [*] Sideloading VLC for Android APK wirelessly over ADB..."
+            adb -s "$TV_TARGET" install -r "$VLC_APK" &>/dev/null || true
+            echo -e "    ${GREEN}[OK]${NC} VLC sideloaded successfully!"
+        else
+            echo -e "    [i] VLC is not currently installed on your TV."
+            echo -e "        Download the official ARM APK from get.videolan.org/vlc-android"
+            echo -e "        and place vlc.apk in this folder to sideload automatically."
+        fi
+    fi
+
+    # Auto-inject addons into Stremio
     if adb -s "$TV_TARGET" shell pm path com.stremio.one &>/dev/null; then
-        echo -e "\n[*] Stremio detected! Auto-injecting Torrentio & Anime Kitsu addons..."
+        echo -e "\n[*] Auto-injecting Torrentio and Anime Kitsu addons into Stremio..."
         adb -s "$TV_TARGET" shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json" &>/dev/null || true
         sleep 2
         adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
@@ -197,9 +232,6 @@ if [ "$DO_STREAM" -eq 1 ]; then
         adb -s "$TV_TARGET" shell input keyevent 22 &>/dev/null || true
         adb -s "$TV_TARGET" shell input keyevent 66 &>/dev/null || true
         echo -e "    ${GREEN}[OK]${NC} Free streaming addons injected into Stremio!"
-    else
-        echo -e "\n[i] Note: Whenever you install Stremio, tap 'Free Media' on your Phone Remote"
-        echo -e "    to auto-inject Torrentio & Anime Kitsu addons with 1 tap!"
     fi
 fi
 

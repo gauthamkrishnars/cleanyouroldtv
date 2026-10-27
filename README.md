@@ -158,15 +158,16 @@ The web remote runs directly on the television without requiring a host computer
 
 ## Free Streaming Stack (Stremio and VLC)
 
-For smooth media playback on low-memory chipsets:
+Budget and older Android TVs frequently have broken, deprecated, or uncertified app stores where modern streaming apps are unavailable. To avoid using USB thumb drives or struggling with obsolete stores, CleanYourOldTV supports wireless sideloading directly over ADB.
 
-1. **Install Stremio and VLC**:
-   * Install the official Android TV build of **Stremio** (`com.stremio.one`) from the Play Store or official website.
-   * Install **VLC for Android** (`org.videolan.vlc`).
+1. **Obtaining Stremio and VLC APKs**:
+   * Stremio Android TV (`com.stremio.one`): Download the official ARM APK from `stremio.com/download` (save as `Stremio_TV.apk`).
+   * VLC for Android (`org.videolan.vlc`): Download the official ARM APK from `get.videolan.org/vlc-android` (save as `vlc.apk`).
+   * If you place `Stremio_TV.apk` and `vlc.apk` inside the project folder, the script will automatically sideload and install them to your TV over Wi-Fi. Alternatively, install them manually using `adb install -r <apk_name>`.
 2. **Automatic Addon Configuration**:
-   * Log into Stremio on your TV once with a free account.
-   * Run `RUN_OPTIMIZER.bat` or tap **Free Media** on your mobile web remote.
-   * The script dispatches deep-link intents to register the **Torrentio** and **Anime Kitsu** addon manifests automatically.
+   * Open Stremio on your TV and log in with a free account once so your addon preferences persist.
+   * Run `RUN_OPTIMIZER.bat` (Option 3 or 4) or tap **Free Media** on your mobile web remote.
+   * The script dispatches deep-link intents to register the **Torrentio** (Movies and Series) and **Anime Kitsu** (Anime) addon manifests automatically.
 3. **Hardware Playback Settings**:
    * In Stremio Settings -> Streaming, exclude `4k` streams. Older decoders like the MediaTek MT5863 cannot process 4K HEVC streams smoothly.
    * Set Default Player to **External Player** (VLC).

@@ -103,7 +103,29 @@ Open `http://<YOUR-TV-IP>:8080` in your phone browser!
 
 ---
 
-## 6. How to Revert Manually
+## 6. Sideload Stremio and VLC Wireless over ADB
+
+To install Stremio and VLC without relying on an uncertified or broken TV app store:
+
+```bash
+# Sideload official APKs over Wi-Fi
+adb install -r Stremio_TV.apk
+adb install -r vlc.apk
+
+# Auto-inject Torrentio (Movies & Series) into Stremio
+adb shell am start -a android.intent.action.VIEW -d "stremio://torrentio.strem.fun/manifest.json"
+adb shell input keyevent 22
+adb shell input keyevent 66
+
+# Auto-inject Anime Kitsu (Anime) into Stremio
+adb shell am start -a android.intent.action.VIEW -d "stremio://anime-kitsu.strem.fun/manifest.json"
+adb shell input keyevent 22
+adb shell input keyevent 66
+```
+
+---
+
+## 7. How to Revert Manually
 
 To undo everything:
 
